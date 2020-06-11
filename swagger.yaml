@@ -1,0 +1,178 @@
+openapi: "3.0.3"
+info:
+  version: 1.0.0
+  title: Scheduler
+  license:
+    name: MIT
+servers:
+  - url: http://scheduler.open.redhat.com/api/v1
+paths:
+  /repo:
+    get:
+      summary: Get information about the repository.
+      operationId: repo
+      tags:
+        - config
+      responses:
+        '200':
+          description: The message containing information about the config repository.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Message"
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+    put:
+      summary: Force the server to update the scheduler config.
+      description: Force server to pull latest changes from the git repository. This operation is asynchronous. The server will always aknowledge that the request for updating the repository has been made.
+      operationId: repopull
+      tags:
+        - config
+      responses:
+        '200':
+          description: A message
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Message"
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /schedule:
+    post:
+      summary: Request schedule of all available clouds matching selector (predicates with labels) and preferences (priorities with labels)
+      operationId: schedule
+      tags:
+        - schedule
+      requestBody:
+        description: JSON object to specify selectors and priorities
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CloudQuery"
+      responses:
+        '200':
+          description: An array of clouds
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Clouds"
+        '404':
+          description: NotFound
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /clouds:
+    get:
+      summary: List all clouds
+      operationId: listCloudsAll
+      tags:
+        - clouds
+      responses:
+        '200':
+          description: An array of clouds
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Clouds"
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /clouds/{cloudName}:
+    get:
+      summary: Info for a specific cloud
+      operationId: showCloudByName
+      tags:
+        - clouds
+      parameters:
+        - name: cloudName
+          in: path
+          required: true
+          description: The name of the cloud to retrieve
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Expected response to a valid request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Cloud"
+        '404':
+          description: NotFound
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+components:
+  schemas:
+    Cloud:
+      type: object
+      required:
+        - name
+        - label
+      properties:
+        name:
+          type: string
+        labels:
+          type: object
+          additionalProperties:
+            type: string
+    Clouds:
+      type: array
+      items:
+        $ref: "#/components/schemas/Cloud"
+    CloudQuery:
+      type: object
+      properties:
+        cloud_selector:
+          type: object
+          additionalProperties:
+            type: string
+        cloud_preference:
+          type: object
+          additionalProperties:
+            type: string
+
+    Message:
+      type: object
+      required:
+        - message
+      properties:
+        message:
+          type: string
+
+    Error:
+      type: object
+      required:
+        - code
+        - message
+      properties:
+        code:
+          type: integer
+          format: int32
+        message:
+          type: string
