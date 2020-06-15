@@ -27,7 +27,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/Error"
     put:
-      summary: Force the server to update the scheduler config.
+      summary: Force the server to refresh the scheduler config from Git.
       description: Force server to pull latest changes from the git repository. This operation is asynchronous. The server will always aknowledge that the request for updating the repository has been made.
       operationId: repopull
       tags:
@@ -97,7 +97,7 @@ paths:
                 $ref: "#/components/schemas/Error"
   /clouds/{cloudName}:
     get:
-      summary: Info for a specific cloud
+      summary: Information about a specific cloud
       operationId: showCloudByName
       tags:
         - clouds
