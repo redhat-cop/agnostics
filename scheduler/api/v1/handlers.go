@@ -33,7 +33,7 @@ func Schedule(w http.ResponseWriter, req *http.Request, params httprouter.Params
 	if err != nil {
 		log.Err.Println(err)
 		errorMessage := Error{
-			Code: 2,
+			Code: http.StatusBadRequest,
 			Message: "Error reading body from request.",
 		}
 		jsonError, _ := json.MarshalIndent(errorMessage, "", " ")
@@ -61,12 +61,25 @@ func Schedule(w http.ResponseWriter, req *http.Request, params httprouter.Params
 	clouds := modules.LabelPredicates(config.GetClouds(), t.CloudSelector)
 	result := modules.LabelPriorities(clouds, t.CloudPreference)
 
-	jsonResult, err := json.MarshalIndent(result, "", "  ")
+	if len(result) == 0 {
+		log.Err.Println(err)
+		errorMessage := Error{
+			Code: 404,
+			Message: "No cloud found.",
+		}
+		jsonError, _ := json.MarshalIndent(errorMessage, "", " ")
+		w.WriteHeader(http.StatusNotFound)
+		io.WriteString(w, string(jsonError))
+		return
+	}
+
+	// Pick the first one
+	jsonResult, err := json.MarshalIndent(result[0], "", "  ")
 	if err != nil {
 		log.Err.Println(err)
 		errorMessage := Error{
-			Code: 1,
-			Message: "Error reading clouds from config.",
+			Code: 4,
+			Message: "Error marshaling cloud from config to JSON.",
 		}
 		jsonError, _ := json.MarshalIndent(errorMessage, "", " ")
 		w.WriteHeader(http.StatusInternalServerError)

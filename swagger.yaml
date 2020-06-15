@@ -59,11 +59,11 @@ paths:
               $ref: "#/components/schemas/CloudQuery"
       responses:
         '200':
-          description: An array of clouds
+          description: The cloud you can use to deploy.
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Clouds"
+                $ref: "#/components/schemas/Cloud"
         '404':
           description: NotFound
           content:
