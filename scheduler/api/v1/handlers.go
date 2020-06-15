@@ -10,6 +10,7 @@ import (
 	"io"
 	"io/ioutil"
 	"net/http"
+	"strings"
 )
 
 func GetClouds(w http.ResponseWriter, req *http.Request, params httprouter.Params) {
@@ -42,13 +43,11 @@ func Schedule(w http.ResponseWriter, req *http.Request, params httprouter.Params
 		return
 	}
 	log.Debug.Println(string(body))
-	var t CloudQuery
-	err = json.Unmarshal(body, &t)
-	if err != nil {
-		log.Err.Println(err)
+
+	if ! json.Valid([]byte(body)) {
 		errorMessage := Error{
-			Code: 3,
-			Message: "Error reading data from body.",
+			Code: http.StatusBadRequest,
+			Message: "Body is not valid JSON.",
 		}
 		jsonError, _ := json.MarshalIndent(errorMessage, "", " ")
 		w.WriteHeader(http.StatusBadRequest)
@@ -56,7 +55,25 @@ func Schedule(w http.ResponseWriter, req *http.Request, params httprouter.Params
 		return
 	}
 
-	log.Debug.Println(t)
+
+	dec := json.NewDecoder(strings.NewReader(string(body)))
+	dec.DisallowUnknownFields()
+
+	t := new(CloudQuery)
+	log.Debug.Println(t, "bla", t.CloudSelector)
+	if err := dec.Decode(t); err != io.EOF  && err != nil {
+		log.Err.Println(err)
+		errorMessage := Error{
+			Code: http.StatusBadRequest,
+			Message: "Error reading data from body. "+err.Error(),
+		}
+		jsonError, _ := json.MarshalIndent(errorMessage, "", " ")
+		w.WriteHeader(http.StatusBadRequest)
+		io.WriteString(w, string(jsonError))
+		return
+	}
+
+	log.Debug.Println(t, "bla", t.CloudSelector)
 
 	clouds := modules.LabelPredicates(config.GetClouds(), t.CloudSelector)
 	result := modules.LabelPriorities(clouds, t.CloudPreference)
