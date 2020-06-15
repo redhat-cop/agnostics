@@ -32,10 +32,11 @@ jobs:
       run: cd scheduler && go test -v ./...
 
   push_to_registry:
-    name: Build and Push Image to Quay
+    name: Build and Push to Quay
     runs-on: ubuntu-latest
     needs: build
     steps:
+      - uses: actions/checkout@master
       - name: Push to Docker Hub
         uses: docker/build-push-action@v1
         with:
