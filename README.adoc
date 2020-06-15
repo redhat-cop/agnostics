@@ -1,0 +1,22 @@
+== Scheduler
+
+image:https://github.com/redhat-gpe/scheduler/workflows/Go/badge.svg[Go]
+
+
+=== link:https://redhat-gpe.github.io/scheduler/api-reference[API Reference]
+
+== License
+
+The scripts and documentation in this project are released under the
+link:LICENSE[MIT License]
+
+== Contributions
+
+Contributions are welcome! See link:docs/contributors.md[Contributor’s
+Guide]
+
+=== Code of Conduct
+
+Be nice :wave:
+
+link:http://docs.ansible.com/ansible/community.html#community-code-of-conduct[Ansible Code of Conduct] applies here.
