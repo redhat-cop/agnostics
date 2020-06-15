@@ -44,4 +44,4 @@ jobs:
           password: ${{ secrets.QUAY_PASSWORD }}
           registry: quay.io
           repository: jassigaa/scheduler-gpe
-          tag_with_ref: true
+          tag_with_sha: true
