@@ -6,6 +6,7 @@ import(
 	"github.com/redhat-gpe/scheduler/config"
 	"github.com/redhat-gpe/scheduler/git"
 	"github.com/redhat-gpe/scheduler/log"
+	"github.com/redhat-gpe/scheduler/watcher"
 )
 
 // Flags
@@ -24,7 +25,7 @@ func main() {
 	parseFlags()
 	log.InitLoggers(debugFlag)
 	git.CloneRepository(repositoryURL, sshPrivateKey)
-	go git.ConsumePullQueue()
+	go watcher.ConsumePullQueue()
 	config.Load()
 	api.Serve()
 }

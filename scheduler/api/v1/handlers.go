@@ -7,6 +7,7 @@ import (
 	"github.com/redhat-gpe/scheduler/git"
 	"github.com/redhat-gpe/scheduler/log"
 	"github.com/redhat-gpe/scheduler/modules"
+	"github.com/redhat-gpe/scheduler/watcher"
 	"io"
 	"io/ioutil"
 	"net/http"
@@ -150,7 +151,7 @@ func GetRepository(w http.ResponseWriter, req *http.Request, _ httprouter.Params
 }
 
 func PullRepository(w http.ResponseWriter, req *http.Request, _ httprouter.Params) {
-	go git.RequestPull()
+	go watcher.RequestPull()
 	m := Message{
 		Message: "Request to update git repository received.",
 	}

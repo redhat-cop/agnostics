@@ -11,7 +11,6 @@ import (
 	"strings"
 	"io/ioutil"
 	"os"
-	"time"
 )
 
 var configRepo *git.Repository
@@ -99,29 +98,6 @@ func CloneRepository(url string, sshPrivateKey string) {
 		}
 	}
 	configRepoDir = dir
-}
-
-var (
-	pullQueue = make(chan bool)
-)
-
-// This function watches the channel 'pullQueue' and executes RefreshRepository when there
-// is a request with a delay of 10 seconds between each call.
-// The goal is to avoid spamming github (or whatever the provider).
-func ConsumePullQueue() {
-	for {
-		select {
-		case <- pullQueue:
-			RefreshRepository()
-			// Empty the queue now that it is refreshed
-			pullQueue = make(chan bool)
-			time.Sleep(10 * time.Second)
-		}
-	}
-}
-
-func RequestPull() {
-	pullQueue <- true
 }
 
 // This function refreshes the git Worktree containing the configuration of the scheduler.
