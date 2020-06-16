@@ -13,3 +13,9 @@ type CloudQuery struct {
 	CloudSelector map[string]string `json:"cloud_selector"`
 	CloudPreference map[string]string `json:"cloud_preference"`
 }
+
+type GitCommit struct {
+	Hash string `json:"hash"`
+	Author string `json:"author"`
+	Date string `json:"date"`
+}

@@ -11,6 +11,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"strings"
+	"time"
 )
 
 func GetClouds(w http.ResponseWriter, req *http.Request, params httprouter.Params) {
@@ -124,6 +125,26 @@ func GetCloudByName(w http.ResponseWriter, req *http.Request, params httprouter.
 		}
 		jsonError, _ := json.MarshalIndent(errorMessage, "", " ")
 		w.WriteHeader(http.StatusNotFound)
+		io.WriteString(w, string(jsonError))
+	}
+}
+
+func GetRepository(w http.ResponseWriter, req *http.Request, _ httprouter.Params) {
+	if head, err := git.GetRepoHeadCommit() ; err == nil {
+		m := GitCommit{
+			Hash: head.Hash.String(),
+			Author: head.Author.Name,
+			Date: head.Author.When.UTC().Format(time.RFC3339),
+		}
+		jsonReply, _ := json.MarshalIndent(m, "", " ")
+		io.WriteString(w, string(jsonReply))
+	} else {
+		errorMessage := Error{
+			Code: http.StatusInternalServerError,
+			Message: "ERROR while retrieving Git HEAD information.",
+		}
+		jsonError, _ := json.MarshalIndent(errorMessage, "", " ")
+		w.WriteHeader(http.StatusInternalServerError)
 		io.WriteString(w, string(jsonError))
 	}
 }

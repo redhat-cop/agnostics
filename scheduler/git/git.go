@@ -5,6 +5,8 @@ import (
 	"path/filepath"
 	"github.com/go-git/go-git/v5"
 	gitssh "github.com/go-git/go-git/v5/plumbing/transport/ssh"
+	gitobject "github.com/go-git/go-git/v5/plumbing/object"
+
 	"github.com/redhat-gpe/scheduler/log"
 	"strings"
 	"io/ioutil"
@@ -17,8 +19,26 @@ var configRepoDir string
 var configRepoCloneOptions *git.CloneOptions
 var configRepoPullOptions *git.PullOptions
 
+// This function returns the current repository path as a string.
 func GetRepoDir() string {
 	return configRepoDir
+}
+
+// This function returns (*object.Commit, error). The Git Commit Object is the result of resolving HEAD on the config repository used by the scheduler..
+// see https://pkg.go.dev/github.com/go-git/go-git/v5@v5.1.0/plumbing/object?tab=doc#Commit
+// Error is nil if OK.
+func GetRepoHeadCommit() (*gitobject.Commit, error) {
+	if rev, err := configRepo.ResolveRevision("HEAD") ; err == nil {
+		if head, err := configRepo.CommitObject(*rev) ; err == nil {
+			return head, nil
+		} else {
+			log.Err.Println(err)
+			return nil, err
+		}
+	} else {
+		log.Err.Println(err)
+		return nil, err
+	}
 }
 
 func CloneRepository(url string, sshPrivateKey string) {

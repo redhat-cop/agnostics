@@ -9,7 +9,7 @@ servers:
 paths:
   /repo:
     get:
-      summary: Get information about the repository.
+      summary: Get local information about the config repository used by the scheduler.
       operationId: repo
       tags:
         - config
@@ -19,7 +19,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Message"
+                $ref: "#/components/schemas/GitCommit"
         default:
           description: unexpected error
           content:
@@ -149,11 +149,13 @@ components:
       type: object
       properties:
         cloud_selector:
+          description: This dictionary describes the labels (key:value) that must be present in the clouds in order to be selected by the scheduler.
           type: object
           additionalProperties:
             type: string
         cloud_preference:
           type: object
+          description: This dictionary describes the labels (key:value) that you would like to be present in the clouds in order to be selected by the scheduler. They change the priority and thus the clouds matching those labels will be selected first.
           additionalProperties:
             type: string
 
@@ -164,6 +166,23 @@ components:
       properties:
         message:
           type: string
+
+    GitCommit:
+      type: object
+      required:
+        - hash
+        - author
+        - date
+      properties:
+        hash:
+          type: string
+          description: Hash of the commit
+        author:
+          type: string
+        date:
+          description: Date of the signature of the commit. Date is UTC.
+          type: string
+          format: date-time
 
     Error:
       type: object

@@ -22,7 +22,7 @@ func Serve() {
 	// v1
 	router.GET("/api/v1/clouds", v1.GetClouds)
 	router.GET("/api/v1/clouds/:name", v1.GetCloudByName)
-	//router.GET("/api/v1/repo", v1.GetRepository)
+	router.GET("/api/v1/repo", v1.GetRepository)
 	router.PUT("/api/v1/repo", v1.PullRepository)
 	router.POST("/api/v1/schedule", v1.Schedule)
 
