@@ -1,0 +1,102 @@
+apiVersion: v1
+kind: Template
+metadata:
+  name: scheduler-babylon 
+  annotations:
+    openshift.io/display-name: "Scheduler Babylon Template" 
+    description: >-
+      Scheduler Babylon Template to install depploymentconfig, service and route,see
+      about using this template, including OpenShift considerations, see
+      https://github.com/redhat-gpe/scheduler/blob/master/README.adoc." 
+    tags: "go,golang,api" 
+    iconClass: icon-go-gopher 
+    openshift.io/provider-display-name: "Red Hat, Inc." 
+    openshift.io/documentation-url: "https://github.com/redhat-gpe/scheduler" 
+    openshift.io/support-url: "https://access.redhat.com" 
+objects:
+- apiVersion: apps/v1
+  kind: Deployment
+  metadata:
+    name: scheduler-gpe
+  spec:
+    selector:
+      matchLabels:
+        app: scheduler
+      annotations:
+        # wait-for-ready used on BuildConfig ensures that template instantiation
+        # will fail immediately if build fails
+        template.alpha.openshift.io/wait-for-ready: "true"
+    template:
+      metadata:
+        labels:
+          app: scheduler
+      spec:
+        replicas: 1
+        restartPolicy: Always
+        containers:
+        - name: scheduler
+          image: quay.io/jassigaa/scheduler-gpe
+          resources:
+            limits:
+              memory: "128Mi"
+              cpu: "500m"
+          imagePullPolicy: Always
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: 8080
+            initialDelaySeconds: 3
+            periodSeconds: 3
+          readinessProbe: 
+            httpGet:
+              path: /healthz
+              port: 8080
+            initialDelaySeconds: 15  
+            timeoutSeconds: 1 
+          ports:
+            - containerPort: 8080
+          volumeMounts:
+            - name: scheduler-baylon-secret
+              mountPath: /.ssh
+        volumes:
+          - name: scheduler-baylon-secret
+            secret: 
+              secretName: scheduler-baylon
+
+- apiVersion: v1
+  kind: Service
+  metadata:
+    name: scheduler
+  spec:
+    selector:
+      app: scheduler
+    ports:
+    - name: http
+      port: 80
+      protocol: TCP
+      targetPort: 8080
+
+- apiVersion: route.openshift.io/v1
+  kind: Route
+  metadata:
+    annotations: 
+      openshift.io/host.generated: "true"
+    name: scheduler
+  spec:
+    path: /api
+    port:
+      targetPort: http
+    tls:
+      insecureEdgeTerminationPolicy: Redirect
+      termination: edge
+    to:
+      kind: Service
+      name: scheduler
+      weight: 100
+
+labels:
+  app: scheduler
+  template: deploy-scheduler-template
+
+        
+
