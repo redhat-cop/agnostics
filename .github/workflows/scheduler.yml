@@ -45,3 +45,4 @@ jobs:
           registry: quay.io
           repository: jassigaa/scheduler-gpe
           tag_with_sha: true
+          tags: "latest"
