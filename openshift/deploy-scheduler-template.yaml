@@ -5,7 +5,7 @@ metadata:
   annotations:
     openshift.io/display-name: "Scheduler Babylon Template" 
     description: >-
-      Scheduler Babylon Template to install depploymentconfig, service and route,see
+      Scheduler Babylon Template to install deployment, service and route,see
       about using this template, including OpenShift considerations, see
       https://github.com/redhat-gpe/scheduler/blob/master/README.adoc." 
     tags: "go,golang,api" 
@@ -22,10 +22,6 @@ objects:
     selector:
       matchLabels:
         app: scheduler
-      annotations:
-        # wait-for-ready used on BuildConfig ensures that template instantiation
-        # will fail immediately if build fails
-        template.alpha.openshift.io/wait-for-ready: "true"
     template:
       metadata:
         labels:
@@ -54,14 +50,14 @@ objects:
             initialDelaySeconds: 15  
             timeoutSeconds: 1 
           ports:
-            - containerPort: 8080
+          - containerPort: 8080
           volumeMounts:
-            - name: scheduler-baylon-secret
-              mountPath: /.ssh
-        volumes:
           - name: scheduler-baylon-secret
-            secret: 
-              secretName: scheduler-baylon
+            mountPath: /.ssh
+        volumes:
+        - name: scheduler-baylon-secret
+          secret: 
+            secretName: scheduler-baylon
 
 - apiVersion: v1
   kind: Service
@@ -79,8 +75,6 @@ objects:
 - apiVersion: route.openshift.io/v1
   kind: Route
   metadata:
-    annotations: 
-      openshift.io/host.generated: "true"
     name: scheduler
   spec:
     path: /api
@@ -97,6 +91,3 @@ objects:
 labels:
   app: scheduler
   template: deploy-scheduler-template
-
-        
-
