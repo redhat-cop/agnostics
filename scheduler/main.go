@@ -18,15 +18,15 @@ var sshPrivateKey string
 var redisURL string
 
 func parseFlags() {
-	flag.StringVar(&repositoryURL, "git-url", "git@github.com:redhat-gpe/scheduler-config.git", "The URL of the git repository where the scheduler will find its configuration. SSH is assumed, unless the URL starts with 'http'. To set git-url you can also use the environment variable REPOSITORY_URL. If both are set, environment variable prevails.")
-	flag.StringVar(&sshPrivateKey, "ssh-private-key", "", "The SSH private key used to authenticate to the git repository. Used only when 'git-url' is an SSH URL. Environment variable: SSH_PRIVATE_KEY.")
+	flag.StringVar(&repositoryURL, "git-url", "git@github.com:redhat-gpe/scheduler-config.git", "The URL of the git repository where the scheduler will find its configuration. SSH is assumed, unless the URL starts with 'http'. To set git-url you can also use the environment variable GIT_URL. If both are set, environment variable prevails.")
+	flag.StringVar(&sshPrivateKey, "git-ssh-private-key", "", "The SSH private key used to authenticate to the git repository. Used only when 'git-url' is an SSH URL. Environment variable: GIT_SSH_PRIVATE_KEY.")
 	flag.StringVar(&redisURL, "redis-url", "redis://localhost:6379", "The URL to access redis. Environment variable: REDIS_URL. The format is described by the IANA specification for the scheme, see https://www.iana.org/assignments/uri-schemes/prov/redis")
 	flag.BoolVar(&debugFlag, "debug", false, "Debug mode. Environment variable: DEBUG.")
 	flag.Parse()
-	if e := os.Getenv("REPOSITORY_URL"); e != "" {
+	if e := os.Getenv("GIT_URL"); e != "" {
 		repositoryURL = e
 	}
-	if e := os.Getenv("SSH_PRIVATE_KEY"); e != "" {
+	if e := os.Getenv("GIT_SSH_PRIVATE_KEY"); e != "" {
 		sshPrivateKey = e
 	}
 	if e := os.Getenv("REDIS_URL"); e != "" {
