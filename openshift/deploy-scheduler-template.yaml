@@ -1,5 +1,12 @@
 apiVersion: v1
 kind: Template
+message: |-
+  The following service(s) have been created in your project: ${DATABASE_SERVICE_NAME}.
+
+         Password: ${REDIS_PASSWORD}
+   Connection URL: redis://${DATABASE_SERVICE_NAME}:6379/
+
+  For more information about using this template, including OpenShift considerations, see https://github.com/sclorg/redis-container/blob/master/3.2.
 metadata:
   name: scheduler-babylon 
   annotations:
@@ -7,13 +14,29 @@ metadata:
     description: >-
       Scheduler Babylon Template to install deployment, service and route,see
       about using this template, including OpenShift considerations, see
-      https://github.com/redhat-gpe/scheduler/blob/master/README.adoc." 
-    tags: "go,golang,api" 
+      https://github.com/redhat-gpe/scheduler/blob/master/README.adoc.
+
+
+      Redis in-memory data structure store, with persistent storage. 
+      For more information about using this template, including OpenShift 
+      considerations, see https://github.com/sclorg/redis-container/blob/master/3.2.
+      NOTE: You must have persistent volumes available in your cluster to use this template.
+      "
+    tags: "go,golang,api,redis" 
     iconClass: icon-go-gopher 
     openshift.io/provider-display-name: "Red Hat, Inc." 
     openshift.io/documentation-url: "https://github.com/redhat-gpe/scheduler" 
     openshift.io/support-url: "https://access.redhat.com" 
 objects:
+
+#- apiVersion: v1
+#  kind: Secret
+#  metadata:
+#     name: scheduler-baylon
+#  type: Opaque
+#  data:
+#    id_rsa: ${GIT_SSH_PRIVATE_KEY}
+
 - apiVersion: apps/v1
   kind: Deployment
   metadata:
@@ -31,7 +54,16 @@ objects:
         restartPolicy: Always
         containers:
         - name: scheduler
-          image: quay.io/jassigaa/scheduler-gpe
+          image: quay.io/jassigaa/scheduler-gpe:sha-a6427a2
+          env:
+            - name: GIT_URL
+              value: "${GIT_URL}"
+            - name: GIT_SSH_PRIVATE_KEY
+              value: "${GIT_SSH_PRIVATE_KEY}"
+            - name: REDIS_URL
+              value: "redis://scheduler-redis:6379/"
+            - name: DEBUG
+              value: "${DEBUG}"
           resources:
             limits:
               memory: "128Mi"
@@ -87,6 +119,135 @@ objects:
       kind: Service
       name: scheduler
       weight: 100
+
+- apiVersion: v1
+  kind: Secret
+  metadata:
+    annotations:
+      template.openshift.io/expose-password: '{.data[''database-password'']}'
+    name: ${DATABASE_SERVICE_NAME}
+  stringData:
+    database-password: ${REDIS_PASSWORD}
+
+- apiVersion: v1
+  kind: Service
+  metadata:
+    annotations:
+      template.openshift.io/expose-uri: redis://{.spec.clusterIP}:{.spec.ports[?(.name=="redis")].port}
+    name: ${DATABASE_SERVICE_NAME}
+  spec:
+    ports:
+    - name: redis
+      port: 6379
+      protocol: TCP
+      targetPort: 6379
+    selector:
+      name: ${DATABASE_SERVICE_NAME}
+
+- apiVersion: v1
+  kind: PersistentVolumeClaim
+  metadata:
+    name: ${DATABASE_SERVICE_NAME}
+  spec:
+    accessModes:
+    - ReadWriteOnce
+    resources:
+      requests:
+        storage: ${VOLUME_CAPACITY}
+
+- apiVersion: apps/v1
+  kind: Deployment
+  metadata:
+    annotations:
+      template.alpha.openshift.io/wait-for-ready: "true"
+    name: ${DATABASE_SERVICE_NAME}
+  spec:
+    replicas: 1
+    selector:
+      matchLabels:
+        name: ${DATABASE_SERVICE_NAME}
+    strategy:
+      type: Recreate
+    template:
+      metadata:
+        labels:
+          name: ${DATABASE_SERVICE_NAME}
+      spec:
+        containers:
+        - capabilities: {}
+          env:
+          - name: REDIS_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                key: database-password
+                name: ${DATABASE_SERVICE_NAME}
+          image: "redis:${REDIS_VERSION}"
+          imagePullPolicy: Always
+          livenessProbe:
+            initialDelaySeconds: 30
+            tcpSocket:
+              port: 6379
+            timeoutSeconds: 1
+          name: redis
+          ports:
+          - containerPort: 6379
+            protocol: TCP
+          resources:
+            limits:
+              memory: ${MEMORY_LIMIT}
+          securityContext:
+            capabilities: {}
+            privileged: false
+          terminationMessagePath: /dev/termination-log
+          volumeMounts:
+          - mountPath: /var/lib/redis/data
+            name: ${DATABASE_SERVICE_NAME}-data
+        dnsPolicy: ClusterFirst
+        restartPolicy: Always
+        volumes:
+        - name: ${DATABASE_SERVICE_NAME}-data
+          persistentVolumeClaim:
+            claimName: ${DATABASE_SERVICE_NAME}
+
+parameters:
+- description: Maximum amount of memory the container can use.
+  displayName: Memory Limit
+  name: MEMORY_LIMIT
+  required: true
+  value: 512Mi
+- description: The name of the OpenShift Service exposed for the database.
+  displayName: Database Service Name
+  name: DATABASE_SERVICE_NAME
+  required: true
+  value: "scheduler-redis"
+- description: Password for the Redis connection user.
+  displayName: Redis Connection Password
+  from: '[a-zA-Z0-9]{16}'
+  generate: expression
+  name: REDIS_PASSWORD
+  required: true
+- description: Volume space available for data, e.g. 512Mi, 2Gi.
+  displayName: Volume Capacity
+  name: VOLUME_CAPACITY
+  required: true
+  value: 1Gi
+- description: Version of Redis image to be used (3.2 or latest).
+  displayName: Version of Redis Image
+  name: REDIS_VERSION
+  required: true
+  value: "latest"
+- name: GIT_URL
+  description: "The scheduler Git Hub URL."
+  value: "git@github.com:redhat-gpe/scheduler-config.git"
+  required: true
+- name: GIT_SSH_PRIVATE_KEY
+  description: "The scheduler github private key to use."
+  value: "/.ssh/id_rsa"
+  required: true
+- name: DEBUG
+  description: "Enable verbose output"
+  value: "true"
+
 
 labels:
   app: scheduler
