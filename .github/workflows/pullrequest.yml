@@ -1,8 +1,6 @@
-name: Go
+name: Pull Request
 
 on:
-  push:
-    branches: [ master ]
   pull_request:
     branches: [ master ]
 
@@ -43,6 +41,7 @@ jobs:
           username: ${{ secrets.QUAY_USERNAME }}
           password: ${{ secrets.QUAY_PASSWORD }}
           registry: quay.io
-          repository: jassigaa/scheduler-gpe
-          tag_with_sha: true
-          tags: "latest"
+          repository: redhat-gpte/scheduler
+          tag_with_ref: true
+          # images from Pull expire after 1d
+          labels: quay.expires-after=1d
