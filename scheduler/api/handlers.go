@@ -1,4 +1,4 @@
-package v1
+package api
 
 import (
 	"encoding/json"
@@ -8,6 +8,7 @@ import (
 	"github.com/redhat-gpe/scheduler/log"
 	"github.com/redhat-gpe/scheduler/modules"
 	"github.com/redhat-gpe/scheduler/watcher"
+	"github.com/redhat-gpe/scheduler/api/v1"
 	"io"
 	"io/ioutil"
 	"net/http"
@@ -15,11 +16,11 @@ import (
 	"time"
 )
 
-func GetClouds(w http.ResponseWriter, req *http.Request, params httprouter.Params) {
+func v1GetClouds(w http.ResponseWriter, req *http.Request, params httprouter.Params) {
 	jsonResult, err := json.MarshalIndent(config.GetClouds(), "", "  ")
 	if err != nil {
 		log.Err.Println(err)
-		errorMessage := Error{
+		errorMessage := v1.Error{
 			Code: 1,
 			Message: "Error reading clouds from config.",
 		}
@@ -31,11 +32,11 @@ func GetClouds(w http.ResponseWriter, req *http.Request, params httprouter.Param
 	}
 }
 
-func Schedule(w http.ResponseWriter, req *http.Request, params httprouter.Params) {
+func v1Schedule(w http.ResponseWriter, req *http.Request, params httprouter.Params) {
 	body, err := ioutil.ReadAll(req.Body)
 	if err != nil {
 		log.Err.Println(err)
-		errorMessage := Error{
+		errorMessage := v1.Error{
 			Code: http.StatusBadRequest,
 			Message: "Error reading body from request.",
 		}
@@ -47,7 +48,7 @@ func Schedule(w http.ResponseWriter, req *http.Request, params httprouter.Params
 	log.Debug.Println(string(body))
 
 	if ! json.Valid([]byte(body)) {
-		errorMessage := Error{
+		errorMessage := v1.Error{
 			Code: http.StatusBadRequest,
 			Message: "Body is not valid JSON.",
 		}
@@ -61,11 +62,10 @@ func Schedule(w http.ResponseWriter, req *http.Request, params httprouter.Params
 	dec := json.NewDecoder(strings.NewReader(string(body)))
 	dec.DisallowUnknownFields()
 
-	t := new(CloudQuery)
-	log.Debug.Println(t, "bla", t.CloudSelector)
+	t := new(v1.CloudQuery)
 	if err := dec.Decode(t); err != io.EOF  && err != nil {
 		log.Err.Println(err)
-		errorMessage := Error{
+		errorMessage := v1.Error{
 			Code: http.StatusBadRequest,
 			Message: "Error reading data from body. "+err.Error(),
 		}
@@ -82,7 +82,7 @@ func Schedule(w http.ResponseWriter, req *http.Request, params httprouter.Params
 
 	if len(result) == 0 {
 		log.Err.Println(err)
-		errorMessage := Error{
+		errorMessage := v1.Error{
 			Code: 404,
 			Message: "No cloud found.",
 		}
@@ -96,7 +96,7 @@ func Schedule(w http.ResponseWriter, req *http.Request, params httprouter.Params
 	jsonResult, err := json.MarshalIndent(result[0], "", "  ")
 	if err != nil {
 		log.Err.Println(err)
-		errorMessage := Error{
+		errorMessage := v1.Error{
 			Code: 4,
 			Message: "Error marshaling cloud from config to JSON.",
 		}
@@ -108,7 +108,7 @@ func Schedule(w http.ResponseWriter, req *http.Request, params httprouter.Params
 	}
 }
 
-func GetCloudByName(w http.ResponseWriter, req *http.Request, params httprouter.Params) {
+func v1GetCloudByName(w http.ResponseWriter, req *http.Request, params httprouter.Params) {
 	clouds := config.GetClouds()
 	if val, ok := clouds[params.ByName("name")] ; ok {
 		json, err := json.MarshalIndent(val, "", "  ")
@@ -120,7 +120,7 @@ func GetCloudByName(w http.ResponseWriter, req *http.Request, params httprouter.
 		}
 
 	} else {
-		errorMessage := Error{
+		errorMessage := v1.Error{
 			Code: 404,
 			Message: "Cloud not found.",
 		}
@@ -130,9 +130,9 @@ func GetCloudByName(w http.ResponseWriter, req *http.Request, params httprouter.
 	}
 }
 
-func GetRepository(w http.ResponseWriter, req *http.Request, _ httprouter.Params) {
+func v1GetRepository(w http.ResponseWriter, req *http.Request, _ httprouter.Params) {
 	if head, err := git.GetRepoHeadCommit() ; err == nil {
-		m := GitCommit{
+		m := v1.GitCommit{
 			Hash: head.Hash.String(),
 			Author: head.Author.Name,
 			Date: head.Author.When.UTC().Format(time.RFC3339),
@@ -140,7 +140,7 @@ func GetRepository(w http.ResponseWriter, req *http.Request, _ httprouter.Params
 		jsonReply, _ := json.MarshalIndent(m, "", " ")
 		io.WriteString(w, string(jsonReply))
 	} else {
-		errorMessage := Error{
+		errorMessage := v1.Error{
 			Code: http.StatusInternalServerError,
 			Message: "ERROR while retrieving Git HEAD information.",
 		}
@@ -150,9 +150,9 @@ func GetRepository(w http.ResponseWriter, req *http.Request, _ httprouter.Params
 	}
 }
 
-func PullRepository(w http.ResponseWriter, req *http.Request, _ httprouter.Params) {
+func v1PullRepository(w http.ResponseWriter, req *http.Request, _ httprouter.Params) {
 	go watcher.RequestPull()
-	m := Message{
+	m := v1.Message{
 		Message: "Request to update git repository received.",
 	}
 	jsonMessage, _ := json.MarshalIndent(m, "", " ")
