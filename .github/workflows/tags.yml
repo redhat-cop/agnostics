@@ -1,0 +1,46 @@
+name: New tag
+
+on:
+  push:
+    tags:
+      - v*
+
+jobs:
+
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+
+    - name: Set up Go 1.x
+      uses: actions/setup-go@v2
+      with:
+        go-version: ^1.14
+      id: go
+
+    - name: Check out code into the Go module directory
+      uses: actions/checkout@v2
+
+    - name: Get dependencies
+      run: cd scheduler && go get -t
+
+    - name: Build
+      run: cd scheduler && go build -v .
+
+    - name: Test
+      run: cd scheduler && go test -v ./...
+
+  push_to_registry:
+    name: Build and Push to Quay
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - uses: actions/checkout@master
+      - name: Push to Docker Hub
+        uses: docker/build-push-action@v1
+        with:
+          username: ${{ secrets.QUAY_USERNAME }}
+          password: ${{ secrets.QUAY_PASSWORD }}
+          registry: quay.io
+          repository: redhat-gpte/scheduler
+          tag_with_ref: true
