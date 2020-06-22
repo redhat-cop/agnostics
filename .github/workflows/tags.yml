@@ -36,7 +36,7 @@ jobs:
     needs: build
     steps:
       - uses: actions/checkout@master
-      - name: Push to Docker Hub
+      - name: Push to Quay
         uses: docker/build-push-action@v1
         with:
           username: ${{ secrets.QUAY_USERNAME }}
