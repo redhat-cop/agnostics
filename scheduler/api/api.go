@@ -4,7 +4,6 @@ import (
 	"log"
 	"net/http"
 	"github.com/julienschmidt/httprouter"
-	"github.com/redhat-gpe/scheduler/api/v1"
 	"io"
 )
 
@@ -20,11 +19,11 @@ func Serve() {
 	router.GET("/healthz", healthHandler)
 
 	// v1
-	router.GET("/api/v1/clouds", v1.GetClouds)
-	router.GET("/api/v1/clouds/:name", v1.GetCloudByName)
-	router.GET("/api/v1/repo", v1.GetRepository)
-	router.PUT("/api/v1/repo", v1.PullRepository)
-	router.POST("/api/v1/schedule", v1.Schedule)
+	router.GET("/api/v1/clouds", v1GetClouds)
+	router.GET("/api/v1/clouds/:name", v1GetCloudByName)
+	router.GET("/api/v1/repo", v1GetRepository)
+	router.PUT("/api/v1/repo", v1PullRepository)
+	router.POST("/api/v1/schedule", v1Schedule)
 
 	log.Fatal(http.ListenAndServe(":8080", router))
 }
