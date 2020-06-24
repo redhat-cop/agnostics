@@ -9,21 +9,26 @@ import(
 )
 
 func RequestPull() {
-	conn :=  db.Dial()
+	conn, err :=  db.Dial()
+	if err != nil {
+		log.Debug.Println("Cannot connect to redis. Repo not updated.")
+		return
+	}
 	defer conn.Close()
 
 	conn.Do("PUBLISH", "repoMQ", "pull")
 }
 
-// This function watches the message Queue 'repoMQ' in redis
+// ConsumePullQueue function watches the message Queue 'repoMQ' in redis
 // and executes RefreshRepository when there is a request with
 // a delay of 10 seconds between each call.
 // The goal is to avoid spamming github (or whatever the provider).
 func ConsumePullQueue() {
-	conn :=  redis.PubSubConn{Conn:db.Dial()}
+	conn :=  db.ReconnectPubSub()
 	defer conn.Close()
 
 	conn.Subscribe("repoMQ")
+	defer conn.Unsubscribe("repoMQ")
 	for {
 		switch v := conn.Receive().(type) {
 		case redis.Message:
@@ -36,6 +41,8 @@ func ConsumePullQueue() {
 			continue
 		case error:
 			log.Debug.Println(v)
+			conn = db.ReconnectPubSub()
+			conn.Subscribe("repoMQ")
 		}
 	}
 }
