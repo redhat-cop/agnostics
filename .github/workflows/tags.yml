@@ -2,6 +2,8 @@ name: New tag
 
 on:
   push:
+    branches:
+      - master
     tags:
       - v*
 
