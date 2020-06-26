@@ -11,7 +11,7 @@ import(
 func RequestPull() {
 	conn, err :=  db.Dial()
 	if err != nil {
-		log.Debug.Println("Cannot connect to redis. Repo not updated.")
+		log.Err.Println("Cannot connect to redis. Repo not updated.")
 		return
 	}
 	defer conn.Close()
