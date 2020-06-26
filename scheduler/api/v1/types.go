@@ -34,6 +34,7 @@ type Message struct {
 type CloudQuery struct {
 	CloudSelector map[string]string `json:"cloud_selector"`
 	CloudPreference map[string]string `json:"cloud_preference"`
+	UUID string `json:"uuid,omitempty"`
 }
 
 type GitCommit struct {
@@ -90,4 +91,14 @@ type Toleration struct {
 	// When specified, allowed values are NoSchedule, PreferNoSchedule.
 	// +optional
 	Effect string `json:"effect,omitempty"`
+}
+
+// Placement object to track where a deployment goes. The link is done thanks to uuid.
+type Placement struct {
+	// The uuid of the CloudForms service
+	UUID string `json:"uuid,omitempty"`
+	// Date the placement was made. UTF and RFC3339
+	Date string `json:"date"`
+	// The cloud where it was scheduled to.
+	Cloud Cloud `json:"cloud"`
 }

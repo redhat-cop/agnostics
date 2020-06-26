@@ -20,6 +20,8 @@ var configRepoDir string
 var configRepoCloneOptions *git.CloneOptions
 var configRepoPullOptions *git.PullOptions
 
+var ErrUpdatedTooRecently = errors.New("updated too recently")
+
 // This function returns the current repository path as a string.
 func GetRepoDir() string {
 	return configRepoDir
@@ -110,7 +112,7 @@ func RefreshRepository() error {
 	// Do not spam git pull. Allow only one pull every 10 seconds for this process.
 	if time.Now().Sub(lastUpdated) < 10 * time.Second {
 		log.Debug.Println("Git repo updated recently. Ignoring.")
-		return errors.New("updated too recently")
+		return ErrUpdatedTooRecently
 	}
 	wt, err:= configRepo.Worktree()
 

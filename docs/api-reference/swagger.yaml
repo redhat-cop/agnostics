@@ -47,7 +47,7 @@ paths:
                 $ref: "#/components/schemas/Error"
   /schedule:
     post:
-      summary: Request schedule of all available clouds matching selector (predicates with labels) and preferences (priorities with labels)
+      summary: Request a deployment to be scheduled on one of all available clouds matching selector (predicates with labels) and preferences (priorities with labels).
       operationId: schedule
       tags:
         - schedule
@@ -59,11 +59,17 @@ paths:
               $ref: "#/components/schemas/CloudQuery"
       responses:
         '200':
-          description: The cloud you can use to deploy.
+          description: The Placement given by the scheduler, containing the target cloud that can be used.
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Cloud"
+                $ref: "#/components/schemas/Placement"
+        '400':
+          description: The service identified by uuid already has a placement.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
         '404':
           description: NotFound
           content:
@@ -76,6 +82,86 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
+  /placements:
+    get:
+      summary: List all the placements.
+      tags:
+        - schedule
+      responses:
+        '200':
+          description: All the placements assigned.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Placements"
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /placements/{uuid}:
+    get:
+      summary: Get the placement assigned to a specific uuid. This is used before starting / stopping / destroying a service, to know on what cloud it was scheduled to.
+      tags:
+        - schedule
+      parameters:
+        - name: uuid
+          in: path
+          required: true
+          description: The UUID of the service in CloudForms.
+          schema:
+            $ref: "#/components/schemas/UUID"
+      responses:
+        '200':
+          description: The placement assigned to this uuid.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Placement"
+        '404':
+          description: Placement not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+    delete:
+      summary: Delete the placement assigned to a specific uuid. You usually call this endpoint once your service is destroyed.
+      tags:
+        - schedule
+      parameters:
+        - name: uuid
+          in: path
+          required: true
+          description: The UUID of the service in CloudForms.
+          schema:
+            $ref: "#/components/schemas/UUID"
+      responses:
+        '200':
+          description: The placement assigned to this uuid is deleted.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Placement"
+        '404':
+          description: Placement not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
   /clouds:
     get:
       summary: List all clouds
@@ -130,6 +216,7 @@ paths:
 components:
   schemas:
     Cloud:
+      description: Object that defines a Cloud.
       type: object
       required:
         - name
@@ -141,13 +228,46 @@ components:
           type: object
           additionalProperties:
             type: string
+
     Clouds:
       type: array
       items:
         $ref: "#/components/schemas/Cloud"
+
+    UUID:
+      type: string
+      description: The UUID of the service in CloudForms. It used to identify placement and can be used later to retrieve a placement.
+      format: uuid
+
+    Placement:
+      type: object
+      description: A placement is a record of what(uuid) / where(cloud) / when(date) something was scheduled.
+      required:
+        - uuid
+        - cloud
+        - date
+      properties:
+        uuid:
+          $ref: "#/components/schemas/UUID"
+        cloud:
+          $ref: "#/components/schemas/Cloud"
+        date:
+          description: The date (UTC and RFC3339 format) the placement was made.
+          type: string
+          format: date-time
+
+    Placements:
+      type: array
+      items:
+        $ref: "#/components/schemas/Placement"
+
     CloudQuery:
       type: object
+      required:
+        - uuid
       properties:
+        uuid:
+          $ref: "#/components/schemas/UUID"
         cloud_selector:
           description: This dictionary describes the labels (key:value) that must be present in the clouds in order to be selected by the scheduler.
           type: object

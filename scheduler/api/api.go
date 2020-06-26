@@ -23,7 +23,10 @@ func Serve() {
 	router.GET("/api/v1/clouds/:name", v1GetCloudByName)
 	router.GET("/api/v1/repo", v1GetRepository)
 	router.PUT("/api/v1/repo", v1PullRepository)
-	router.POST("/api/v1/schedule", v1Schedule)
+	router.POST("/api/v1/schedule", v1PostSchedule)
+	router.GET("/api/v1/placements", v1GetPlacements)
+	router.GET("/api/v1/placements/:uuid", v1GetPlacement)
+	router.DELETE("/api/v1/placements/:uuid", v1DeletePlacement)
 
 	log.Fatal(http.ListenAndServe(":8080", router))
 }
