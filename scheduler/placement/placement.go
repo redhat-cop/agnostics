@@ -14,11 +14,11 @@ var ErrPlacementNotFound = errors.New("placement not found")
 
 func get(key string) (v1.Placement, error) {
 	conn, err := db.Dial()
-	defer conn.Close()
 	if err != nil {
 		log.Err.Println("Cannot connect to redis:", err)
 		return v1.Placement{}, err
 	}
+	defer conn.Close()
 
 	if reply, err := redis.Bytes(conn.Do("JSON.GET", key)); err != nil {
 		if err == redis.ErrNil {
@@ -45,13 +45,13 @@ func Get(uuid string) (v1.Placement, error) {
 
 // Get retrives a placement from the DB.
 func GetAll() ([]v1.Placement, error) {
-	conn, err := db.Dial()
 	result := []v1.Placement{}
-	defer conn.Close()
+	conn, err := db.Dial()
 	if err != nil {
 		log.Err.Println("Cannot connect to redis:", err)
 		return []v1.Placement{}, err
 	}
+	defer conn.Close()
 
 	keys, err := redis.Strings(conn.Do("KEYS", "placement:*"))
 	if err != nil {
@@ -70,11 +70,11 @@ func GetAll() ([]v1.Placement, error) {
 // Save saves a placement in the database.
 func Save(p v1.Placement) error {
 	conn, err := db.Dial()
-	defer conn.Close()
 	if err != nil {
 		log.Err.Println("Cannot connect to redis:", err)
 		return err
 	}
+	defer conn.Close()
 
 	jsonText, err :=  json.Marshal(p)
 
@@ -94,11 +94,11 @@ func Save(p v1.Placement) error {
 
 func Delete(uuid string) error {
 	conn, err := db.Dial()
-	defer conn.Close()
 	if err != nil {
 		log.Err.Println("Cannot connect to redis:", err)
 		return err
 	}
+	defer conn.Close()
 
 	if reply, err := conn.Do("JSON.DEL", "placement:"+uuid); err != nil {
 		log.Debug.Println("placement.Delete(", uuid ,")=", reply)
