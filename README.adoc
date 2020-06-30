@@ -5,6 +5,29 @@ image:https://github.com/redhat-gpe/scheduler/workflows/Go/badge.svg[Go] image:h
 
 === link:https://redhat-gpe.github.io/scheduler/api-reference[API Reference]
 
+=== Usage
+
+[source,subs="+quotes,verbatim,macros"]
+----
+Usage of ./scheduler:
+  -debug
+        Debug mode.
+        Environment variable: *DEBUG*
+
+  -git-ssh-private-key string
+        The path of the SSH private key used to authenticate to the git repository. Used only when 'git-url' is an SSH URL.
+        Environment variable: *GIT_SSH_PRIVATE_KEY*
+
+  -git-url string
+        The URL of the git repository where the scheduler will find its configuration. SSH is assumed, unless the URL starts with 'http'.
+        Environment variable: *GIT_URL*
+         (default "\git@github.com:redhat-gpe/scheduler-config.git")
+  -redis-url string
+        The URL to access redis. The format is described by the IANA specification for the scheme, see https://www.iana.org/assignments/uri-schemes/prov/redis
+        Environment variable: *REDIS_URL*
+         (default "redis://localhost:6379")
+----
+
 == License
 
 The scripts and documentation in this project are released under the
