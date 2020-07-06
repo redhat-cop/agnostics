@@ -54,7 +54,7 @@ objects:
         restartPolicy: Always
         containers:
         - name: scheduler
-          image: quay.io/jassigaa/scheduler-gpe:sha-a6427a2
+          image: quay.io/redhat-gpte/scheduler-gpe
           env:
             - name: GIT_URL
               value: "${GIT_URL}"
