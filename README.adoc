@@ -5,7 +5,7 @@ image:https://github.com/redhat-gpe/scheduler/workflows/Go/badge.svg[Go] image:h
 
 === link:https://redhat-gpe.github.io/scheduler/api-reference[API Reference]
 
-=== Usage
+=== Usage (server)
 
 [source,subs="+quotes,verbatim,macros"]
 ----
@@ -26,6 +26,84 @@ Usage of ./scheduler:
         The URL to access redis. The format is described by the IANA specification for the scheme, see https://www.iana.org/assignments/uri-schemes/prov/redis
         Environment variable: *REDIS_URL*
          (default "redis://localhost:6379")
+----
+
+== Example using the scheduler (client)
+
+Here is an example how the scheduler can be used from ansible.
+
+.Input variables
+[source,yaml]
+----
+agnosticv_meta:
+  scheduler:
+    enable: true
+    data:
+      cloud_preference:
+        purpose: development
+        region: '{{ region }}'
+      uuid: '{{ uuid }}'
+    endpoint: /api/v1/schedule
+    url: https://scheduler.example.com
+
+----
+
+.Playbook to schedule or retrieve a placement using UUID
+[source,yaml]
+----
+- name: Schedule or retrieve a placement using UUID
+  hosts: localhost
+  gather_facts: false
+  tasks:
+    - name: Schedule a placement
+      uri:
+        url: "{{ agnosticv_meta.scheduler.url + agnosticv_meta.scheduler.endpoint }}"
+        validate_certs: "{{ agnosticv_meta.scheduler.validate_certs | default(false) }}"
+        return_content: true
+        method: POST
+        body_format: json
+        body: "{{ agnosticv_meta.scheduler.data }}"
+        status_code: [200, 400]
+      register: r_placement
+      retries: 10
+      delay: 30
+      until: r_placement is succeeded
+
+    - when: >-
+        r_placement.status == 400
+        and 'service uuid already has a placement' in r_placement.json.message
+      name: Get placement using uuid
+      uri:
+        url: "{{ agnosticv_meta.scheduler.url }}/api/v1/placements/{{ uuid }}"
+        validate_certs: "{{ agnosticv_meta.scheduler.validate_certs | default(false) }}"
+        return_content: true
+        method: GET
+      register: r_placement
+      retries: 10
+      delay: 30
+      until: r_placement is succeeded
+
+    - debug:
+        msg: "{{ r_placement.json.cloud.name }}"
+----
+
+. Playbook to delete placement using UUID
+[source,yaml]
+----
+- name: Delete placement using UUID
+  hosts: localhost
+  gather_facts: false
+  tasks:
+    - name: Delete placement using uuid
+      uri:
+        url: "{{ agnosticv_meta.scheduler.url }}/api/v1/placements/{{ uuid }}"
+        validate_certs: "{{ agnosticv_meta.scheduler.validate_certs | default(false) }}"
+        return_content: true
+        method: DELETE
+      register: r_placement
+      retries: 10
+      delay: 30
+      until: r_placement is succeeded
 ----
 
 == License
