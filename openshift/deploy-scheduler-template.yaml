@@ -8,9 +8,9 @@ message: |-
 
   For more information about using this template, including OpenShift considerations, see https://github.com/sclorg/redis-container/blob/master/3.2.
 metadata:
-  name: scheduler-babylon 
+  name: scheduler-babylon
   annotations:
-    openshift.io/display-name: "Scheduler Babylon Template" 
+    openshift.io/display-name: "Scheduler Babylon Template"
     description: >-
       Scheduler Babylon Template to install deployment, service and route,see
       about using this template, including OpenShift considerations, see
@@ -75,12 +75,12 @@ objects:
               port: 8080
             initialDelaySeconds: 3
             periodSeconds: 3
-          readinessProbe: 
+          readinessProbe:
             httpGet:
               path: /healthz
               port: 8080
-            initialDelaySeconds: 15  
-            timeoutSeconds: 1 
+            initialDelaySeconds: 15
+            timeoutSeconds: 1
           ports:
           - containerPort: 8080
           volumeMounts:
@@ -88,7 +88,7 @@ objects:
             mountPath: /.ssh
         volumes:
         - name: scheduler-baylon-secret
-          secret: 
+          secret:
             secretName: scheduler-baylon
 
 - apiVersion: v1

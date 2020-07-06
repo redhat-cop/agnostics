@@ -1,18 +1,18 @@
 package modules
 
 import (
-	"github.com/redhat-gpe/scheduler/config"
+	"github.com/redhat-gpe/scheduler/api/v1"
 	"testing"
 )
 
 func TestLabelPredicates(t *testing.T) {
 	var (
 		labels map[string]string
-		clouds map[string]config.Cloud
-		result map[string]config.Cloud
+		clouds map[string]v1.Cloud
+		result map[string]v1.Cloud
 	)
-	clouds = map[string]config.Cloud{
-		"openstack-1": config.Cloud{
+	clouds = map[string]v1.Cloud{
+		"openstack-1": v1.Cloud{
 			Name: "openstack-1",
 			Labels: map[string]string{
 				"type": "osp",
@@ -20,7 +20,7 @@ func TestLabelPredicates(t *testing.T) {
 				"purpose": "development",
 			},
 		},
-		"openstack-2": config.Cloud{
+		"openstack-2": v1.Cloud{
 			Name: "openstack-2",
 			Labels: map[string]string{
 				"type": "osp",
@@ -28,7 +28,7 @@ func TestLabelPredicates(t *testing.T) {
 				"purpose": "ILT",
 			},
 		},
-		"openstack-3": config.Cloud{
+		"openstack-3": v1.Cloud{
 			Name: "openstack-3",
 			Labels: map[string]string{
 				"type": "osp",
@@ -86,12 +86,12 @@ func TestLabelPredicates(t *testing.T) {
 func TestLabelPriorities(t *testing.T) {
 	var (
 		preferences map[string]string
-		clouds map[string]config.Cloud
-		result []config.Cloud
+		clouds map[string]v1.Cloud
+		result []v1.Cloud
 	)
 
-	clouds = map[string]config.Cloud{
-		"openstack-1": config.Cloud{
+	clouds = map[string]v1.Cloud{
+		"openstack-1": v1.Cloud{
 			Name: "openstack-1",
 			Labels: map[string]string{
 				"type": "osp",
@@ -99,7 +99,7 @@ func TestLabelPriorities(t *testing.T) {
 				"purpose": "development",
 			},
 		},
-		"openstack-2": config.Cloud{
+		"openstack-2": v1.Cloud{
 			Name: "openstack-2",
 			Labels: map[string]string{
 				"type": "osp",
@@ -107,7 +107,7 @@ func TestLabelPriorities(t *testing.T) {
 				"purpose": "ILT",
 			},
 		},
-		"openstack-3": config.Cloud{
+		"openstack-3": v1.Cloud{
 			Name: "openstack-3",
 			Labels: map[string]string{
 				"type": "osp",
@@ -115,7 +115,7 @@ func TestLabelPriorities(t *testing.T) {
 				"purpose": "ELT",
 			},
 		},
-		"openstack-4": config.Cloud{
+		"openstack-4": v1.Cloud{
 			Name: "openstack-4",
 			Labels: map[string]string{
 				"type": "osp",
@@ -123,7 +123,7 @@ func TestLabelPriorities(t *testing.T) {
 				"purpose": "ELT",
 			},
 		},
-		"openstack-5": config.Cloud{
+		"openstack-5": v1.Cloud{
 			Name: "openstack-5",
 			Labels: map[string]string{
 				"type": "osp",
@@ -131,7 +131,7 @@ func TestLabelPriorities(t *testing.T) {
 				"purpose": "development",
 			},
 		},
-		"openstack-6": config.Cloud{
+		"openstack-6": v1.Cloud{
 			Name: "openstack-6",
 			Labels: map[string]string{
 				"type": "osp",

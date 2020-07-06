@@ -5,7 +5,7 @@
 replicaCount: 1
 
 image:
-  repository: quay.io/jassigaa/scheduler-gpe
+  repository: quay.io/redhat-gpte/scheduler
   pullPolicy: Always
   # Overrides the image tag whose default is the chart appVersion.
   tag: "latest"
@@ -64,12 +64,11 @@ tolerations: []
 
 affinity: {}
 
-volumes: 
+volumes:
 - name: scheduler-baylon-secret
-  secret: 
+  secret:
     secretName: scheduler-baylon
 
 volumeMounts:
 - name: scheduler-baylon-secret
   mountPath: /.ssh
-

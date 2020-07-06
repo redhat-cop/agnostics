@@ -11,12 +11,16 @@ import (
 	"strings"
 	"io/ioutil"
 	"os"
+	"time"
+	"errors"
 )
 
 var configRepo *git.Repository
 var configRepoDir string
 var configRepoCloneOptions *git.CloneOptions
 var configRepoPullOptions *git.PullOptions
+
+var ErrUpdatedTooRecently = errors.New("updated too recently")
 
 // This function returns the current repository path as a string.
 func GetRepoDir() string {
@@ -100,10 +104,16 @@ func CloneRepository(url string, sshPrivateKey string) {
 	configRepoDir = dir
 }
 
+var lastUpdated time.Time
+
 // This function refreshes the git Worktree containing the configuration of the scheduler.
 // It's basically running the equivalent of 'git pull'.
 func RefreshRepository() error {
-	// Use WaitGroup to avoid spamming github with 'git pull'
+	// Do not spam git pull. Allow only one pull every 10 seconds for this process.
+	if time.Now().Sub(lastUpdated) < 10 * time.Second {
+		log.Debug.Println("Git repo updated recently. Ignoring.")
+		return ErrUpdatedTooRecently
+	}
 	wt, err:= configRepo.Worktree()
 
 	if err != nil {
@@ -122,6 +132,8 @@ func RefreshRepository() error {
 			log.Err.Println(err)
 		}
 	}
+
+	lastUpdated = time.Now()
 
 	return err
 }
