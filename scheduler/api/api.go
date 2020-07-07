@@ -4,10 +4,18 @@ import (
 	"log"
 	"net/http"
 	"github.com/julienschmidt/httprouter"
+	"github.com/redhat-gpe/scheduler/db"
 	"io"
 )
 
 func healthHandler (w http.ResponseWriter, req *http.Request, _ httprouter.Params) {
+	conn, err := db.Dial()
+	if err != nil {
+		io.WriteString(w, "ERROR: can't connect to redis\n")
+		return
+	}
+	defer conn.Close()
+
 	io.WriteString(w, "OK\n")
 }
 
