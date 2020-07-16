@@ -4,7 +4,7 @@ image:https://github.com/redhat-gpe/agnostics/workflows/Go/badge.svg[Go] image:h
 
 image::https://gpte-public.s3.amazonaws.com/agnostics/scheduler.png[width=100%]
 
-=== link:https://redhat-gpe.github.io/scheduler/api-reference[API Reference]
+=== link:https://redhat-gpe.github.io/agnostics/api-reference[API Reference]
 
 === Usage (server)
 
