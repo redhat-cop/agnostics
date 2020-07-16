@@ -3,10 +3,10 @@ FROM registry.access.redhat.com/ubi8/go-toolset:latest AS builder
 WORKDIR /agnostics/
 
 USER root
-RUN chown -R ${USER_UID}:0 /scheduler
+RUN chown -R ${USER_UID}:0 /agnostics
 USER ${USER_UID}
 
-COPY ./* ./
+COPY ./ ./
 ENV GOOS=linux
 RUN go build ./cmd/scheduler
 
