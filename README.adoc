@@ -1,6 +1,6 @@
 == Agnostic Scheduler
 
-image:https://github.com/redhat-gpe/scheduler/workflows/Go/badge.svg[Go] image:https://quay.io/repository/redhat-gpte/scheduler/status["Docker Repository on Quay", link="https://quay.io/repository/redhat-gpte/scheduler"]
+image:https://github.com/redhat-gpe/agnostics/workflows/Go/badge.svg[Go] image:https://quay.io/repository/redhat-gpte/agnostics/status["Docker Repository on Quay", link="https://quay.io/repository/redhat-gpte/scheduler"]
 
 
 === link:https://redhat-gpe.github.io/scheduler/api-reference[API Reference]
