@@ -1,10 +1,10 @@
 package watcher
 
 import(
-	"github.com/redhat-gpe/scheduler/git"
-	"github.com/redhat-gpe/scheduler/log"
-	"github.com/redhat-gpe/scheduler/config"
-	"github.com/redhat-gpe/scheduler/db"
+	"github.com/redhat-gpe/agnostics/git"
+	"github.com/redhat-gpe/agnostics/log"
+	"github.com/redhat-gpe/agnostics/config"
+	"github.com/redhat-gpe/agnostics/db"
 	"github.com/gomodule/redigo/redis"
 )
 

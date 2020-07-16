@@ -2,12 +2,12 @@ package main
 
 import(
 	"flag"
-	"github.com/redhat-gpe/scheduler/api"
-	"github.com/redhat-gpe/scheduler/config"
-	"github.com/redhat-gpe/scheduler/git"
-	"github.com/redhat-gpe/scheduler/log"
-	"github.com/redhat-gpe/scheduler/watcher"
-	"github.com/redhat-gpe/scheduler/db"
+	"github.com/redhat-gpe/agnostics/api"
+	"github.com/redhat-gpe/agnostics/config"
+	"github.com/redhat-gpe/agnostics/git"
+	"github.com/redhat-gpe/agnostics/log"
+	"github.com/redhat-gpe/agnostics/watcher"
+	"github.com/redhat-gpe/agnostics/db"
 	"os"
 )
 

@@ -1,4 +1,4 @@
-module github.com/redhat-gpe/scheduler
+module github.com/redhat-gpe/agnostics
 
 go 1.14
 

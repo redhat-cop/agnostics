@@ -1,9 +1,9 @@
 package placement
 
 import(
-	"github.com/redhat-gpe/scheduler/db"
-	"github.com/redhat-gpe/scheduler/log"
-	"github.com/redhat-gpe/scheduler/api/v1"
+	"github.com/redhat-gpe/agnostics/db"
+	"github.com/redhat-gpe/agnostics/log"
+	"github.com/redhat-gpe/agnostics/api/v1"
 	"github.com/gomodule/redigo/redis"
 	"errors"
 	"encoding/json"

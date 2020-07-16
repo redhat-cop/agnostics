@@ -7,7 +7,7 @@ import (
 	gitssh "github.com/go-git/go-git/v5/plumbing/transport/ssh"
 	gitobject "github.com/go-git/go-git/v5/plumbing/object"
 
-	"github.com/redhat-gpe/scheduler/log"
+	"github.com/redhat-gpe/agnostics/log"
 	"strings"
 	"io/ioutil"
 	"os"

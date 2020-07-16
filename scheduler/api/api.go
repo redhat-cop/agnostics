@@ -4,7 +4,7 @@ import (
 	"log"
 	"net/http"
 	"github.com/julienschmidt/httprouter"
-	"github.com/redhat-gpe/scheduler/db"
+	"github.com/redhat-gpe/agnostics/db"
 	"io"
 )
 
