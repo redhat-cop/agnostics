@@ -122,3 +122,10 @@ Guide]
 Be nice :wave:
 
 link:http://docs.ansible.com/ansible/community.html#community-code-of-conduct[Ansible Code of Conduct] applies here.
+
+
+=== See Also
+
+- https://github.com/redhat-cop/agnosticd
+- https://github.com/redhat-cop/agnosticv
+- https://github.com/redhat-cop/babylon
