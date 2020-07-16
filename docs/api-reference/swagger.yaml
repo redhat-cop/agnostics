@@ -56,7 +56,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/CloudQuery"
+              $ref: "#/components/schemas/ScheduleQuery"
       responses:
         '200':
           description: The Placement given by the scheduler, containing the target cloud that can be used.
@@ -261,7 +261,40 @@ components:
       items:
         $ref: "#/components/schemas/Placement"
 
-    CloudQuery:
+    Toleration:
+      type: object
+      description: Object passed when requesting schedule to ignore taints.
+      properties:
+        key:
+          type: string
+          description: |-
+            Key is the taint key that the toleration applies to.
+            Empty means match all taint keys.
+            If the key is empty, operator must be Exists;
+            this combination means to match all values and all keys.
+            (optional)
+        operator:
+          description: |-
+            Operator represents a key's relationship to the value.
+            Valid operators are Exists and Equal. Defaults to Equal.
+            Exists is equivalent to wildcard for value, so that a cloud can
+            tolerate all taints of a particular category.
+            (optional)
+          type: string
+        value:
+          type: string
+          description: |-
+            Value is the taint value the toleration matches to.
+            If the operator is Exists, the value should be empty, otherwise just a regular string.
+            +optional
+        effect:
+          type: string
+          description: |-
+            Effect indicates the taint effect to match. Empty means match all taint effects.
+            When specified, allowed values are NoSchedule, PreferNoSchedule.
+            +optional
+
+    ScheduleQuery:
       type: object
       required:
         - uuid
@@ -278,6 +311,11 @@ components:
           description: This dictionary describes the labels (key:value) that you would like to be present in the clouds in order to be selected by the scheduler. They change the priority and thus the clouds matching those labels will be selected first.
           additionalProperties:
             type: string
+        tolerations:
+          type: array
+          description: The list of tolerations for this request. Any taint matching the a toleration will be ignored (all taints ignored == cloud can be selected).
+          items:
+            $ref: "#/components/schemas/Toleration"
 
     Message:
       type: object

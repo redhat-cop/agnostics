@@ -1,9 +1,9 @@
 package placement
 
 import(
-	"github.com/redhat-gpe/agnostics/db"
-	"github.com/redhat-gpe/agnostics/log"
-	"github.com/redhat-gpe/agnostics/api/v1"
+	"github.com/redhat-gpe/agnostics/internal/db"
+	"github.com/redhat-gpe/agnostics/internal/log"
+	"github.com/redhat-gpe/agnostics/internal/api/v1"
 	"github.com/gomodule/redigo/redis"
 	"errors"
 	"encoding/json"

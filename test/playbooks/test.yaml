@@ -1,0 +1,39 @@
+- name: Schedule or retrieve a placement using UUID
+  hosts: localhost
+  gather_facts: false
+  vars:
+    agnosticv_meta:
+      scheduler:
+        url: http://localhost:8080
+        endpoint: /api/v1/schedule
+  tasks:
+    - name: Schedule a placement
+      vars:
+        data:
+          uuid: testemptydata
+      uri:
+        url: "{{ agnosticv_meta.scheduler.url + agnosticv_meta.scheduler.endpoint }}"
+        return_content: true
+        method: POST
+        body_format: json
+        body: "{{ data }}"
+        status_code: [200, 400]
+      register: r_placement
+
+    - name: Get placement using uuid
+      vars:
+        uuid: testemptydata
+      uri:
+        url: "{{ agnosticv_meta.scheduler.url }}/api/v1/placements/{{ uuid }}"
+        return_content: true
+        method: GET
+      register: r_placement
+
+    - name: Delete placement using uuid
+      vars:
+        uuid: testemptydata
+      uri:
+        url: "{{ agnosticv_meta.scheduler.url }}/api/v1/placements/{{ uuid }}"
+        return_content: true
+        method: DELETE
+      register: r_placement

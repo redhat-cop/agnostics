@@ -3,9 +3,9 @@ package config
 import(
 	"gopkg.in/yaml.v2"
 	"io/ioutil"
-	"github.com/redhat-gpe/agnostics/log"
-	"github.com/redhat-gpe/agnostics/git"
-	"github.com/redhat-gpe/agnostics/api/v1"
+	"github.com/redhat-gpe/agnostics/internal/log"
+	"github.com/redhat-gpe/agnostics/internal/git"
+	"github.com/redhat-gpe/agnostics/internal/api/v1"
 	"path/filepath"
 	"path"
 	"os"
