@@ -2,6 +2,7 @@
 
 image:https://github.com/redhat-gpe/agnostics/workflows/Go/badge.svg[Go] image:https://quay.io/repository/redhat-gpte/agnostics/status["Docker Repository on Quay", link="https://quay.io/repository/redhat-gpte/scheduler"]
 
+image::https://gpte-public.s3.amazonaws.com/agnostics/scheduler.png[width=100%]
 
 === link:https://redhat-gpe.github.io/scheduler/api-reference[API Reference]
 
