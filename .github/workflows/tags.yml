@@ -24,13 +24,13 @@ jobs:
       uses: actions/checkout@v2
 
     - name: Get dependencies
-      run: cd scheduler && go get -t
+      run:  go get -t ./cmd/scheduler
 
     - name: Build
-      run: cd scheduler && go build -v .
+      run: go build -v ./cmd/scheduler
 
     - name: Test
-      run: cd scheduler && go test -v ./...
+      run: go test -v ./...
 
   push_to_registry:
     name: Build and Push to Quay
