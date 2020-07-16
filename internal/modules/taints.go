@@ -1,7 +1,7 @@
 package modules
 
 import (
-	"github.com/redhat-gpe/agnostics/api/v1"
+	"github.com/redhat-gpe/agnostics/internal/api/v1"
 )
 
 type taintedCloud v1.Cloud

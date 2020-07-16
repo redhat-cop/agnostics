@@ -2,12 +2,12 @@ package main
 
 import(
 	"flag"
-	"github.com/redhat-gpe/agnostics/api"
-	"github.com/redhat-gpe/agnostics/config"
-	"github.com/redhat-gpe/agnostics/git"
-	"github.com/redhat-gpe/agnostics/log"
-	"github.com/redhat-gpe/agnostics/watcher"
-	"github.com/redhat-gpe/agnostics/db"
+	"github.com/redhat-gpe/agnostics/internal/api"
+	"github.com/redhat-gpe/agnostics/internal/config"
+	"github.com/redhat-gpe/agnostics/internal/git"
+	"github.com/redhat-gpe/agnostics/internal/log"
+	"github.com/redhat-gpe/agnostics/internal/watcher"
+	"github.com/redhat-gpe/agnostics/internal/db"
 	"os"
 )
 

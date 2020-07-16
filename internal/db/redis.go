@@ -3,7 +3,7 @@ package db
 
 import (
 	"github.com/gomodule/redigo/redis"
-	"github.com/redhat-gpe/agnostics/log"
+	"github.com/redhat-gpe/agnostics/internal/log"
 	"time"
 	"math"
 )

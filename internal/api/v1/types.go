@@ -31,9 +31,10 @@ type Message struct {
 	Message string `json:"message"`
 }
 
-type CloudQuery struct {
+type ScheduleQuery struct {
 	CloudSelector map[string]string `json:"cloud_selector"`
 	CloudPreference map[string]string `json:"cloud_preference"`
+	Tolerations []Toleration `json:"tolerations"`
 	UUID string `json:"uuid,omitempty"`
 }
 

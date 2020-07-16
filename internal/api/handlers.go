@@ -3,13 +3,13 @@ package api
 import (
 	"encoding/json"
 	"github.com/julienschmidt/httprouter"
-	"github.com/redhat-gpe/agnostics/config"
-	"github.com/redhat-gpe/agnostics/git"
-	"github.com/redhat-gpe/agnostics/log"
-	"github.com/redhat-gpe/agnostics/modules"
-	"github.com/redhat-gpe/agnostics/watcher"
-	"github.com/redhat-gpe/agnostics/api/v1"
-	"github.com/redhat-gpe/agnostics/placement"
+	"github.com/redhat-gpe/agnostics/internal/config"
+	"github.com/redhat-gpe/agnostics/internal/git"
+	"github.com/redhat-gpe/agnostics/internal/log"
+	"github.com/redhat-gpe/agnostics/internal/modules"
+	"github.com/redhat-gpe/agnostics/internal/watcher"
+	"github.com/redhat-gpe/agnostics/internal/api/v1"
+	"github.com/redhat-gpe/agnostics/internal/placement"
 	"io"
 	"io/ioutil"
 	"net/http"
@@ -63,7 +63,7 @@ func v1PostSchedule(w http.ResponseWriter, req *http.Request, params httprouter.
 
 	dec := json.NewDecoder(strings.NewReader(string(body)))
 	dec.DisallowUnknownFields()
-	t := new(v1.CloudQuery)
+	t := new(v1.ScheduleQuery)
 	if err := dec.Decode(t); err != io.EOF  && err != nil {
 		log.Out.Println("POST schedule", err)
 		w.WriteHeader(http.StatusBadRequest)
