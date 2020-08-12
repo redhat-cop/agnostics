@@ -1,7 +1,8 @@
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "scheduler.fullname" . }}
+  name: agnostics
   labels:
     {{- include "scheduler.labels" . | nindent 4 }}
 spec:
@@ -9,6 +10,8 @@ spec:
   selector:
     matchLabels:
       {{- include "scheduler.selectorLabels" . | nindent 6 }}
+  strategy:
+    type: RollingUpdate
   template:
     metadata:
     {{- with .Values.podAnnotations }}
@@ -18,19 +21,19 @@ spec:
       labels:
         {{- include "scheduler.selectorLabels" . | nindent 8 }}
     spec:
-      {{- with .Values.imagePullSecrets }}
-      imagePullSecrets:
-        {{- toYaml . | nindent 8 }}
-      {{- end }}
-      serviceAccountName: {{ include "scheduler.serviceAccountName" . }}
-      securityContext:
-        {{- toYaml .Values.podSecurityContext | nindent 8 }}
       containers:
-        - name: {{ .Chart.Name }}
-          securityContext:
-            {{- toYaml .Values.securityContext | nindent 12 }}
-          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+        - name: agnostics
+          image: {{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}
           imagePullPolicy: {{ .Values.image.pullPolicy }}
+          env:
+            - name: GIT_URL
+              value: {{ .Values.git.url }}
+            - name: GIT_SSH_PRIVATE_KEY
+              value: {{ .Values.git.private_key }}
+            - name: REDIS_URL
+              value: {{ .Values.git.redis_url }}
+            - name: DEBUG
+              value: {{ .Values.git.debug }}
           ports:
             - name: http
               containerPort: 8080
@@ -46,7 +49,9 @@ spec:
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
           volumeMounts:
-             {{- toYaml .Values.volumeMounts | nindent 12 }}
+            - name: agnostics-babylon-secret
+              mountPath: /.ssh
+
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
@@ -59,7 +64,7 @@ spec:
       tolerations:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-       {{- with .Values.volumes }}
       volumes:
-        {{- toYaml . | nindent 8 }}
-      {{- end }}
+        - name: agnostics-babylon-secret
+          secret:
+            secretName: agnostics-babylon

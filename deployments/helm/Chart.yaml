@@ -1,5 +1,5 @@
 apiVersion: v2
-name: schechuler
+name: agnostics
 description: A Scheduler Chart to install on OPenshift/Kubernetes
 
 # A chart can be either an 'application' or a 'library' chart.
