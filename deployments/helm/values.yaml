@@ -8,33 +8,31 @@ image:
   repository: quay.io/redhat-gpte/scheduler
   pullPolicy: Always
   # Overrides the image tag whose default is the chart appVersion.
-  tag: "latest"
+  tag: latest
+
+git:
+  url: git@github.com:redhat-gpe/scheduler-config.git
+  private_key: /.ssh/id_rsa
+  redis_url: redis://agnostics-redis:6379/
+  debug: \"true\"
+
+initializePersistentVolumes: true
 
 imagePullSecrets: []
-nameOverride: ""
-fullnameOverride: ""
+nameOverride:
+fullnameOverride:
 
-serviceAccount:
-  # Specifies whether a service account should be created
-  create: true
-  # Annotations to add to the service account
-  annotations: {}
-  # The name of the service account to use.
-  # If not set and create is true, a name is generated using the fullname template
-  name: "scheduler-gpe"
+redis:
+  name: agnostics-redis
+  port: 6379
+  image:
+    repository: redislabs/rejson
+    pullPolicy: Always
+    tag: "latest"
+  resources:
+    limits:
+      memory: 512Mi
 
-podAnnotations: {}
-
-podSecurityContext: {}
-  # fsGroup: 2000
-
-securityContext: {}
-  # capabilities:
-  #   drop:
-  #   - ALL
-  # readOnlyRootFilesystem: true
-  # runAsNonRoot: true
-  # runAsUser: 1000
 
 service:
   type: ClusterIP
@@ -49,10 +47,6 @@ route:
 
 
 resources:
-  # We usually recommend not to specify default resources and to leave this as a conscious
-  # choice for the user. This also increases chances charts run on environments with little
-  # resources, such as Minikube. If you do want to specify resources, uncomment the following
-  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
   limits:
     cpu: 500m
     memory: 128Mi
@@ -63,12 +57,3 @@ nodeSelector: {}
 tolerations: []
 
 affinity: {}
-
-volumes:
-- name: scheduler-baylon-secret
-  secret:
-    secretName: scheduler-baylon
-
-volumeMounts:
-- name: scheduler-baylon-secret
-  mountPath: /.ssh
