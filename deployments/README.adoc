@@ -1,0 +1,80 @@
+== Agnostic Scheduler Deployment
+
+=== Helm Usage
+
+
+Clone this repo and change directories
+----
+cd agnostics/deployments
+----
+
+Login to your cluster
+----
+oc login --token=mytoken --server=myserver
+----
+
+Create new project or change to the desired one
+----
+oc new-project agnostics-test
+oc project agnostics-test
+----
+
+You will need to create two secrets before deploying
+----
+agnostics-babylon (used to retrieve the clouds information)
+
+type: Opaque
+data:
+  id_rsa: id_rsa contents
+
+agnostics-redis (redis password)
+
+type: Opaque
+data:
+  database-password: redispassword
+----
+
+You can generate both with helm. Create a new directory called files and add the id_rsa key.
+
+Modify `helm/templates/scheduler-sv-init.yaml` adding the following
+
+----
+
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: agnostics-baylon
+type: Opaque
+data:
+  id_rsa: |-
+    {{ .Files.Get "files/id_rsa" | b64enc }}
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: agnostics-redis
+type: Opaque
+data:
+  database-password: encodedpasword
+
+----
+
+Deploying agnostics
+----
+helm install agnostics-app helm/
+----
+
+Expected output (similar to)
+----
+NAME: agnostics-app
+LAST DEPLOYED: Tue Aug 25 13:23:52 2020
+NAMESPACE: agnostics-test
+STATUS: deployed
+REVISION: 1
+TEST SUITE: None
+----
+
+Access the api following the documentation.
+
+Use `helm uinstall agnostics-app` to remove your deployment.
