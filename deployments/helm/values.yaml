@@ -28,10 +28,12 @@ redis:
   image:
     repository: redislabs/rejson
     pullPolicy: Always
-    tag: "latest"
+    tag: "1.0.4"
   resources:
     limits:
       memory: 512Mi
+  volume:
+    size: 10Gi
 
 
 service:

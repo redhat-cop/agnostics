@@ -8,6 +8,6 @@ spec:
   - ReadWriteOnce
   resources:
     requests:
-      storage: 1Gi
+      storage: {{ .Values.redis.volume.size }}
   storageClassName: gp2
 {{ end }}
