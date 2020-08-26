@@ -39,8 +39,11 @@ spec:
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
           volumeMounts:
-            - mountPath: /var/lib/redis/data
+            - mountPath: /data
               name: agnostics-redis-data
+            - mountPath: /etc/redis.conf
+              subPath: redis.conf
+              name: agnostics-redis-config
 
       dnsPolicy: ClusterFirst
       restartPolicy: Always
@@ -51,3 +54,6 @@ spec:
       - name: agnostics-redis-data
         persistentVolumeClaim:
           claimName: agnostics-redis
+      - name: agnostics-redis-config
+        configMap:
+          name: agnostics-redis-config
