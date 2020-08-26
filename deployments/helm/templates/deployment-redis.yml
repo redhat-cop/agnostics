@@ -19,6 +19,11 @@ spec:
         - name: redis
           image: {{ .Values.redis.image.repository }}:{{ .Values.redis.image.tag }}
           imagePullPolicy: {{ .Values.redis.image.pullPolicy }}
+          command:
+            - redis-server
+            - /etc/redis.conf
+            - --loadmodule
+            - /usr/lib/redis/modules/rejson.so
           env:
             - name: REDIS_PASSWORD
               valueFrom:
