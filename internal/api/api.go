@@ -11,6 +11,7 @@ import (
 func healthHandler (w http.ResponseWriter, req *http.Request, _ httprouter.Params) {
 	conn, err := db.Dial()
 	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
 		io.WriteString(w, "ERROR: can't connect to redis\n")
 		return
 	}
@@ -25,6 +26,8 @@ func Serve() {
 	// Health and status checks
 	router.GET("/health", healthHandler)
 	router.GET("/healthz", healthHandler)
+	router.GET("/api/v1/health", healthHandler)
+	router.GET("/api/v1/healthz", healthHandler)
 
 	// v1
 	router.GET("/api/v1/clouds", v1GetClouds)
