@@ -26,12 +26,6 @@ agnostics-babylon (used to retrieve the clouds information)
 type: Opaque
 data:
   id_rsa: id_rsa contents
-
-agnostics-redis (redis password)
-
-type: Opaque
-data:
-  database-password: redispassword
 ----
 
 You can generate both with helm. Create a new directory called files and add the id_rsa key.
@@ -49,15 +43,6 @@ type: Opaque
 data:
   id_rsa: |-
     {{ .Files.Get "files/id_rsa" | b64enc }}
----
-apiVersion: v1
-kind: Secret
-metadata:
-  name: agnostics-redis
-type: Opaque
-data:
-  database-password: encodedpasword
-
 ----
 
 Deploying agnostics

@@ -24,12 +24,6 @@ spec:
             - /etc/redis.conf
             - --loadmodule
             - /usr/lib/redis/modules/rejson.so
-          env:
-            - name: REDIS_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  key: database-password
-                  name: agnostics-redis
           livenessProbe:
             failureThreshold: 3
             initialDelaySeconds: 30
