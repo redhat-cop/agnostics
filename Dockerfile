@@ -11,6 +11,7 @@ ENV GOOS=linux
 RUN go build ./cmd/scheduler
 
 FROM registry.access.redhat.com/ubi8/ubi-minimal:latest AS deploy
+RUN microdnf install -y rsync tar
 WORKDIR /agnostics/
 USER ${USER_UID}
 COPY build/github_known_hosts /ssh/known_hosts
