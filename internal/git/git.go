@@ -76,11 +76,11 @@ func CloneRepository(url string, sshPrivateKey string) {
 		// Clones the repository into the given dir, just as a normal git clone does
 		configRepoCloneOptions = &git.CloneOptions{
 			URL: url,
-			Depth: 1,
+			SingleBranch: true,
 			Auth: auth,
 		}
 		configRepoPullOptions = &git.PullOptions{
-			Depth: 1,
+			SingleBranch: true,
 			Auth: auth,
 		}
 		configRepo, err = git.PlainClone(dir, false, configRepoCloneOptions)
@@ -91,10 +91,10 @@ func CloneRepository(url string, sshPrivateKey string) {
 		// Clones the repository into the given dir, just as a normal git clone does
 		configRepoCloneOptions = &git.CloneOptions{
 			URL: url,
-			Depth: 1,
+			SingleBranch: true,
 		}
 		configRepoPullOptions = &git.PullOptions{
-			Depth: 1,
+			SingleBranch: true,
 		}
 		configRepo, err = git.PlainClone(dir, false, configRepoCloneOptions)
 		if err != nil {
