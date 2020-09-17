@@ -14,6 +14,7 @@ func TestLabelPredicates(t *testing.T) {
 	clouds = map[string]v1.Cloud{
 		"openstack-1": v1.Cloud{
 			Name: "openstack-1",
+			Enabled: true,
 			Labels: map[string]string{
 				"type": "osp",
 				"region": "na",
@@ -22,6 +23,7 @@ func TestLabelPredicates(t *testing.T) {
 		},
 		"openstack-2": v1.Cloud{
 			Name: "openstack-2",
+			Enabled: true,
 			Labels: map[string]string{
 				"type": "osp",
 				"region": "emea",
@@ -30,10 +32,20 @@ func TestLabelPredicates(t *testing.T) {
 		},
 		"openstack-3": v1.Cloud{
 			Name: "openstack-3",
+			Enabled: true,
 			Labels: map[string]string{
 				"type": "osp",
 				"region": "emea",
 				"purpose": "ELT",
+			},
+		},
+		"openstack-disabled": v1.Cloud{
+			Name: "openstack-disabled",
+			Enabled: false,
+			Labels: map[string]string{
+				"type": "osp",
+				"region": "emea",
+				"purpose": "OFF",
 			},
 		},
 	}
@@ -42,7 +54,7 @@ func TestLabelPredicates(t *testing.T) {
 		"type": "osp",
 	}
 	result = LabelPredicates(clouds, labels)
-	if len(result) != len(clouds) {
+	if len(result) != len(clouds) - 1 {
 		t.Error(clouds, labels, result)
 	}
 
