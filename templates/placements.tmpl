@@ -11,7 +11,7 @@
             <td>Cloud Name</td>
         </tr>
 
-{{ range . }}
+        {{ range . }}
         <tr>
             <td>{{ .Date }}</td>
             <td>
@@ -28,7 +28,6 @@
             </td>
             <td>{{ .Cloud.Name }}</td>
         </tr>
-{{ end }}
+        {{ end }}
     </table>
-
 </div>

@@ -10,16 +10,16 @@
             <td>Taints</td>
         </tr>
 
-{{ range . }}
+        {{ range . }}
         <tr>
             <td><b>{{ .Name }}</b></td>
             <td>{{ countPlacements .Name }}</td>
             <td>
-            <ul>
-            {{ range  $key, $val := .Labels }}
-            <li><code>{{ $key }}:&nbsp;{{ $val }}</code></li>
-            {{end}}
-            </ul>
+                <ul>
+                    {{ range  $key, $val := .Labels }}
+                    <li><code>{{ $key }}:&nbsp;{{ $val }}</code></li>
+                    {{end}}
+                </ul>
             </td>
             <td>
                 {{ if eq .Enabled true }}
@@ -30,7 +30,6 @@
             </td>
             <td><pre>{{ marshal .Taints }}</pre></td>
         </tr>
-{{ end }}
+        {{ end }}
     </table>
-
 </div>
