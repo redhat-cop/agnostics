@@ -134,8 +134,8 @@ func v1GetPlacements(w http.ResponseWriter, req *http.Request, params httprouter
 	w.Header().Set("Content-Type", "application/json")
 	enc := json.NewEncoder(w)
 	enc.SetIndent("", " ")
+	log.Debug.Println("GET all placements")
 	if p, err := placement.GetAll(0) ; err == nil {
-		log.Debug.Println("GET placement", p)
 		if err := enc.Encode(p); err != nil {
 			log.Err.Println("GET placement", err)
 			w.WriteHeader(http.StatusInternalServerError)
