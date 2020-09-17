@@ -213,6 +213,26 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
+  /counters:
+    put:
+      summary: Force the server to refresh all the counters
+      description: Force server to refresh all the counters. This operation blocking and expensive, please use with care.
+      operationId: refreshcounters
+      tags:
+        - stats
+      responses:
+        '200':
+          description: A message
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Message"
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
 components:
   schemas:
     Cloud:

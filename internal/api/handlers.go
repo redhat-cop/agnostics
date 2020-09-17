@@ -134,7 +134,7 @@ func v1GetPlacements(w http.ResponseWriter, req *http.Request, params httprouter
 	w.Header().Set("Content-Type", "application/json")
 	enc := json.NewEncoder(w)
 	enc.SetIndent("", " ")
-	if p, err := placement.GetAll() ; err == nil {
+	if p, err := placement.GetAll(0) ; err == nil {
 		log.Debug.Println("GET placement", p)
 		if err := enc.Encode(p); err != nil {
 			log.Err.Println("GET placement", err)
@@ -289,5 +289,25 @@ func v1PullRepository(w http.ResponseWriter, req *http.Request, _ httprouter.Par
 	go watcher.RequestPull()
 	enc.Encode(v1.Message{
 		Message: "Request to update git repository received.",
+	})
+}
+
+func v1PutCounters(w http.ResponseWriter, req *http.Request, _ httprouter.Params) {
+	w.Header().Set("Content-Type", "application/json")
+	enc := json.NewEncoder(w)
+	enc.SetIndent("", " ")
+	log.Out.Println("Refresh all counters")
+	err := placement.RefreshAllCounters()
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		log.Err.Println(err)
+		enc.Encode(v1.Error{
+			Code: http.StatusInternalServerError,
+			Message: "ERROR while refreshing counters.",
+		})
+
+	}
+	enc.Encode(v1.Message{
+		Message: "All counters updated",
 	})
 }

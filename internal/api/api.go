@@ -1,10 +1,10 @@
 package api
 
 import (
-	"log"
 	"net/http"
 	"github.com/julienschmidt/httprouter"
 	"github.com/redhat-gpe/agnostics/internal/db"
+	"github.com/redhat-gpe/agnostics/internal/log"
 	"io"
 )
 
@@ -38,6 +38,8 @@ func Serve() {
 	router.GET("/api/v1/placements", v1GetPlacements)
 	router.GET("/api/v1/placements/:uuid", v1GetPlacement)
 	router.DELETE("/api/v1/placements/:uuid", v1DeletePlacement)
+	router.PUT("/api/v1/counters", v1PutCounters)
 
-	log.Fatal(http.ListenAndServe(":8080", router))
+	log.Out.Println("API listen on port :8080")
+	log.Err.Fatal(http.ListenAndServe(":8080", router))
 }

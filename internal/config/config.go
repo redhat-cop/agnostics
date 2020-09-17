@@ -48,9 +48,7 @@ func loadClouds() map[string]v1.Cloud {
 			log.Err.Fatalf("Cannot unmarshal data: %v", err)
 		} else {
 			log.Debug.Printf("Found cloud %s (enabled=%v)\n", cloud.Name, cloud.Enabled)
-			if cloud.Enabled {
-				clouds[cloud.Name] = cloud
-			}
+			clouds[cloud.Name] = cloud
 		}
 	}
 
