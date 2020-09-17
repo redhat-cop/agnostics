@@ -216,7 +216,7 @@ paths:
   /counters:
     put:
       summary: Force the server to refresh all the counters
-      description: Force server to refresh all the counters. This operation blocking and expensive, please use with care.
+      description: Force server to refresh all the counters. This operation is blocking and expensive, please use with care.
       operationId: refreshcounters
       tags:
         - stats
