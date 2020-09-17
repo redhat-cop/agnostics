@@ -11,6 +11,9 @@ func LabelPredicates(clouds map[string]v1.Cloud, labels map[string]string) map[s
 
 out:
 	for k, v := range clouds {
+		if v.Enabled == false {
+			continue out
+		}
 		// Check if all labels match
 		for lk, lv := range labels {
 			if v.Labels[lk] != lv {

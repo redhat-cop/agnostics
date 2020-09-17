@@ -8,7 +8,7 @@ type Cloud struct {
 	// by the scheduler later, depending on priorities configured.
 	// It's possible to add it to the config though, if needed.
 	Weight int `json:"weight"`
-	// Enabled defines if the cloud can be selected when loading the config. It's a top-level control. If it's set to false, then the cloud will not be loaded in the configuration. It takes precedence over scheduling, thus over taints and tolerations.
+	// Enabled defines if the cloud can be selected when loading the config. It's a top-level control. If it's set to false, then the cloud will not be used. It takes precedence over scheduling, thus over taints and tolerations.
 	// True by default.
 	Enabled bool `json:"enabled"`
 	// Taints are part of the mechanism to reduce the priority (effect=PreferNoSchedule)
