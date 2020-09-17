@@ -36,6 +36,7 @@ type ScheduleQuery struct {
 	CloudPreference map[string]string `json:"cloud_preference"`
 	Tolerations []Toleration `json:"tolerations"`
 	UUID string `json:"uuid,omitempty"`
+	Info map[string]string `json:"info"`
 }
 
 type GitCommit struct {
@@ -102,4 +103,7 @@ type Placement struct {
 	Date string `json:"date"`
 	// The cloud where it was scheduled to.
 	Cloud Cloud `json:"cloud"`
+	// Additional optional information
+	// +optional
+	Info map[string]string `json:"info"`
 }
