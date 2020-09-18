@@ -83,6 +83,19 @@ func v1PostSchedule(w http.ResponseWriter, req *http.Request, params httprouter.
 		return
 	}
 
+	if len(t.Annotations) > 0 {
+		for k, v := range t.Annotations {
+			if k == "" || v == "" {
+				w.WriteHeader(http.StatusBadRequest)
+				enc.Encode(v1.Error{
+					Code: http.StatusBadRequest,
+					Message: "Annotations keys and values cannot be empty string.",
+				})
+				return
+			}
+		}
+	}
+
 	if _, err := placement.Get(t.UUID) ; err != placement.ErrPlacementNotFound {
 		if err == nil {
 			w.WriteHeader(http.StatusBadRequest)
