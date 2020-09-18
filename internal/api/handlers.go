@@ -117,7 +117,7 @@ func v1PostSchedule(w http.ResponseWriter, req *http.Request, params httprouter.
 	result := v1.Placement{
 		UUID: t.UUID,
 		Cloud: results[0],
-		CreationTimestamp: time.Now().UTC(),
+		CreationTimestamp: time.Now().UTC().Round(time.Second),
 		Annotations: t.Annotations,
 	}
 	placement.Save(result)

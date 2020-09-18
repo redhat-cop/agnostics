@@ -32,6 +32,11 @@ func get(key string) (v1.Placement, error) {
 		if err := json.Unmarshal(reply, &p); err != nil {
 			return v1.Placement{}, err
 		}
+		if p.CreationTimestamp.IsZero() && ! p.Date.IsZero() {
+			// Probably an old record that doesn't have creation_timestamp field set.
+			// Use old deprecated field 'date'
+			p.CreationTimestamp = p.Date
+		}
 		return p, nil
 	}
 }

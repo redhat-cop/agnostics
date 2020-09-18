@@ -102,7 +102,9 @@ type Placement struct {
 	// The uuid of the CloudForms service
 	UUID string `json:"uuid,omitempty"`
 	// CreationTimestamp the placement was made. UTC and RFC3339
-	CreationTimestamp time.Time `json:"create_timestamp"`
+	CreationTimestamp time.Time `json:"creation_timestamp"`
+	// Date the placement was made. UTC and RFC3339  (deprecated)
+	Date time.Time `json:"date"`
 	// The cloud where it was scheduled to.
 	Cloud Cloud `json:"cloud"`
 	// Annotations
