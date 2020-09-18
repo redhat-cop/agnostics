@@ -264,6 +264,7 @@ components:
       type: object
       additionalProperties:
         type: string
+        minLength: 1
     Placement:
       type: object
       description: A placement is a record of what(uuid) / where(cloud) / when(date) something was scheduled.
