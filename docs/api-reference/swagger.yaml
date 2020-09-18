@@ -259,22 +259,30 @@ components:
       description: The UUID of the service in CloudForms. It used to identify placement and can be used later to retrieve a placement.
       format: uuid
 
+    Annotations:
+      description: Key / Value map to provide optional information. Annotations can be used to filter or identify objects.
+      type: object
+      additionalProperties:
+        type: string
     Placement:
       type: object
       description: A placement is a record of what(uuid) / where(cloud) / when(date) something was scheduled.
       required:
         - uuid
         - cloud
-        - date
+        - creation_timestamp
+        - annotations
       properties:
         uuid:
           $ref: "#/components/schemas/UUID"
         cloud:
           $ref: "#/components/schemas/Cloud"
-        date:
+        creation_timestamp:
           description: The date (UTC and RFC3339 format) the placement was made.
           type: string
           format: date-time
+        annotations:
+          $ref: "#/components/schemas/Annotations"
 
     Placements:
       type: array
@@ -337,10 +345,7 @@ components:
           items:
             $ref: "#/components/schemas/Toleration"
         annotations:
-          description: Key / Value map to provide optional information that will be copied to the placement. Annotations can be used later to filter or identify placements.
-          type: object
-          additionalProperties:
-            type: string
+          $ref: "#/components/schemas/Annotations"
 
     Message:
       type: object

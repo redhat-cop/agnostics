@@ -1,5 +1,7 @@
 package v1
 
+import("time")
+
 // The Cloud is the main object that the scheduler work with.
 type Cloud struct {
 	Name string `json:"name"`
@@ -99,8 +101,8 @@ type Toleration struct {
 type Placement struct {
 	// The uuid of the CloudForms service
 	UUID string `json:"uuid,omitempty"`
-	// Date the placement was made. UTC and RFC3339
-	Date string `json:"date"`
+	// CreationTimestamp the placement was made. UTC and RFC3339
+	CreationTimestamp time.Time `json:"create_timestamp"`
 	// The cloud where it was scheduled to.
 	Cloud Cloud `json:"cloud"`
 	// Annotations
