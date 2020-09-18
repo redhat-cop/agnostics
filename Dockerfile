@@ -17,4 +17,5 @@ USER ${USER_UID}
 COPY build/github_known_hosts /ssh/known_hosts
 env SSH_KNOWN_HOSTS /ssh/known_hosts
 COPY --from=builder /agnostics/scheduler ./
+COPY ./templates/ ./templates/
 CMD ["./scheduler"]

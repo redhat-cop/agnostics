@@ -1,5 +1,7 @@
 package v1
 
+import("time")
+
 // The Cloud is the main object that the scheduler work with.
 type Cloud struct {
 	Name string `json:"name"`
@@ -36,6 +38,7 @@ type ScheduleQuery struct {
 	CloudPreference map[string]string `json:"cloud_preference"`
 	Tolerations []Toleration `json:"tolerations"`
 	UUID string `json:"uuid,omitempty"`
+	Annotations map[string]string `json:"annotations"`
 }
 
 type GitCommit struct {
@@ -98,8 +101,13 @@ type Toleration struct {
 type Placement struct {
 	// The uuid of the CloudForms service
 	UUID string `json:"uuid,omitempty"`
-	// Date the placement was made. UTF and RFC3339
-	Date string `json:"date"`
+	// CreationTimestamp the placement was made. UTC and RFC3339
+	CreationTimestamp time.Time `json:"creation_timestamp"`
+	// Date the placement was made. UTC and RFC3339  (deprecated)
+	Date time.Time `json:"date"`
 	// The cloud where it was scheduled to.
 	Cloud Cloud `json:"cloud"`
+	// Annotations
+	// +optional
+	Annotations map[string]string `json:"annotations"`
 }

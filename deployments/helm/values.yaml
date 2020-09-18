@@ -40,6 +40,10 @@ service:
   type: ClusterIP
   port: 80
 
+console:
+  type: ClusterIP
+  port: 8081
+
 route:
   enabled: true
   annotations: {}

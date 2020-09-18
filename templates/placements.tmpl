@@ -1,0 +1,33 @@
+<div class="pure-u-1 pure-u-md-1-2">
+    <h1>Placements</h1>
+
+    <p>Total: {{ countPlacements "all" }} placements</p>
+    <table class="pure-table pure-table-horizontal" style="font-size: 80%">
+        <caption>First 100 placements</caption>
+        <tr>
+            <td>Creation Timestamp</td>
+            <td>UUID</td>
+            <td>Annotations</td>
+            <td>Cloud Name</td>
+        </tr>
+
+        {{ range . }}
+        <tr>
+            <td>{{ .CreationTimestamp }}</td>
+            <td>
+                <span style="font-size: 80%">
+                    <code>{{ .UUID }}</code>
+                </span>
+            </td>
+            <td>
+                <ul>
+                    {{ range $key, $val := .Annotations }}
+                    <li><code>{{ $key }}:&nbsp;{{ $val }}</code></li>
+                    {{ end }}
+                </ul>
+            </td>
+            <td>{{ .Cloud.Name }}</td>
+        </tr>
+        {{ end }}
+    </table>
+</div>
