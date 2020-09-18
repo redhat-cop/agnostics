@@ -36,7 +36,7 @@ type ScheduleQuery struct {
 	CloudPreference map[string]string `json:"cloud_preference"`
 	Tolerations []Toleration `json:"tolerations"`
 	UUID string `json:"uuid,omitempty"`
-	Info map[string]string `json:"info"`
+	Annotations map[string]string `json:"annotations"`
 }
 
 type GitCommit struct {
@@ -99,11 +99,11 @@ type Toleration struct {
 type Placement struct {
 	// The uuid of the CloudForms service
 	UUID string `json:"uuid,omitempty"`
-	// Date the placement was made. UTF and RFC3339
+	// Date the placement was made. UTC and RFC3339
 	Date string `json:"date"`
 	// The cloud where it was scheduled to.
 	Cloud Cloud `json:"cloud"`
-	// Additional optional information
+	// Annotations
 	// +optional
-	Info map[string]string `json:"info"`
+	Annotations map[string]string `json:"annotations"`
 }

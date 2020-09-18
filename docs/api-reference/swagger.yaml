@@ -336,8 +336,8 @@ components:
           description: The list of tolerations for this request. Any taint matching the a toleration will be ignored (all taints ignored == cloud can be selected).
           items:
             $ref: "#/components/schemas/Toleration"
-        info:
-          description: This dictionary allow to provide more information about who makes the request. For example: guid, email, ...
+        annotations:
+          description: Key / Value map to provide optional information that will be copied to the placement. Annotations can be used later to filter or identify placements.
           type: object
           additionalProperties:
             type: string

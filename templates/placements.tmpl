@@ -7,7 +7,7 @@
         <tr>
             <td>Issued</td>
             <td>UUID</td>
-            <td>Info</td>
+            <td>Annotations</td>
             <td>Cloud Name</td>
         </tr>
 
@@ -21,7 +21,7 @@
             </td>
             <td>
                 <ul>
-                    {{ range $key, $val := .Info }}
+                    {{ range $key, $val := .Annotations }}
                     <li><code>{{ $key }}:&nbsp;{{ $val }}</code></li>
                     {{ end }}
                 </ul>

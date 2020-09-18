@@ -118,7 +118,7 @@ func v1PostSchedule(w http.ResponseWriter, req *http.Request, params httprouter.
 		UUID: t.UUID,
 		Cloud: results[0],
 		Date: time.Now().UTC().Format(time.RFC3339),
-		Info: t.Info,
+		Annotations: t.Annotations,
 	}
 	placement.Save(result)
 	if err := enc.Encode(result) ; err != nil {
