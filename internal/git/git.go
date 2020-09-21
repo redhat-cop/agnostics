@@ -27,7 +27,7 @@ func GetRepoDir() string {
 	return configRepoDir
 }
 
-// This function returns the current repository path as a string.
+// This function returns the current repository object
 func GetRepo() *git.Repository {
 	return configRepo
 }
