@@ -2,15 +2,17 @@ package console
 
 import (
 	"encoding/json"
-	"html/template"
+	"gopkg.in/yaml.v2"
 	"github.com/julienschmidt/httprouter"
-	"github.com/redhat-gpe/agnostics/internal/config"
 	"github.com/redhat-gpe/agnostics/internal/api/v1"
+	"github.com/redhat-gpe/agnostics/internal/config"
+	"github.com/redhat-gpe/agnostics/internal/git"
 	"github.com/redhat-gpe/agnostics/internal/log"
 	"github.com/redhat-gpe/agnostics/internal/placement"
+	"html/template"
 	"io"
-	"path/filepath"
 	"net/http"
+	"path/filepath"
 )
 
 func marshal(data interface{}) string {
@@ -19,6 +21,14 @@ func marshal(data interface{}) string {
 		log.Err.Fatal(err)
 	}
 	return string(json)
+}
+
+func toYaml(data interface{}) string {
+	result, err := yaml.Marshal(data)
+	if err != nil {
+		log.Err.Fatal(err)
+	}
+	return string(result)
 }
 
 func countPlacements(name string) string{
@@ -42,13 +52,17 @@ func getDashboard(w http.ResponseWriter, req *http.Request, params httprouter.Pa
 	var fm = template.FuncMap{
 		"marshal": marshal,
 		"countPlacements": countPlacements,
+		"toYaml": toYaml,
 	}
 
 	clouds := config.GetClouds()
 
+	commitInfo, _ := v1.NewGitCommit(git.GetRepo())
+
 	type HomeData struct {
 		Clouds map[string]v1.Cloud
 		Placements []v1.Placement
+		GitCommit v1.GitCommit
 	}
 
 	t := template.Must(
@@ -58,6 +72,7 @@ func getDashboard(w http.ResponseWriter, req *http.Request, params httprouter.Pa
 	t.ExecuteTemplate(w, "layout.tmpl", HomeData {
 		clouds,
 		placements,
+		commitInfo,
 	})
 }
 

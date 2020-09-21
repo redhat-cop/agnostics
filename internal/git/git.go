@@ -27,6 +27,11 @@ func GetRepoDir() string {
 	return configRepoDir
 }
 
+// This function returns the current repository path as a string.
+func GetRepo() *git.Repository {
+	return configRepo
+}
+
 // This function returns (*object.Commit, error). The Git Commit Object is the result of resolving HEAD on the config repository used by the scheduler..
 // see https://pkg.go.dev/github.com/go-git/go-git/v5@v5.1.0/plumbing/object?tab=doc#Commit
 // Error is nil if OK.

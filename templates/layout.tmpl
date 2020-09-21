@@ -12,6 +12,7 @@
       .pure-g > div {
         box-sizing: border-box;
         padding-left: 1em;
+        font-size: 80%;
     }
 
       tr:nth-child(even) {
@@ -21,8 +22,13 @@
 </head>
 <body>
   <div class="pure-g">
-  {{ template "clouds.tmpl" .Clouds }}
-  {{ template "placements.tmpl" .Placements }}
+    <div class="pure-u-1 pure-u-md-1-2">
+      {{ template "config.tmpl" .GitCommit }}
+      {{ template "clouds.tmpl" .Clouds }}
+    </div>
+    <div class="pure-u-1 pure-u-md-1-2">
+      {{ template "placements.tmpl" .Placements }}
+    </div>
   </div>
 </body>
 </html>
