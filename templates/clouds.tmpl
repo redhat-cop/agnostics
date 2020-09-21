@@ -1,35 +1,33 @@
-<div class="pure-u-1 pure-u-md-1-2">
-    <h1>Clouds</h1>
+<h1>Clouds</h1>
 
-    <table class="pure-table pure-table-horizontal">
-        <tr>
-            <td>Name</td>
-            <td>Placements</td>
-            <td>Labels</td>
-            <td>Enabled</td>
-            <td>Taints</td>
-        </tr>
+<table class="pure-table pure-table-horizontal">
+  <tr>
+    <td>Name</td>
+    <td>Placements</td>
+    <td>Labels</td>
+    <td>Enabled</td>
+    <td>Taints</td>
+  </tr>
 
-        {{ range . }}
-        <tr>
-            <td><b>{{ .Name }}</b></td>
-            <td>{{ countPlacements .Name }}</td>
-            <td>
-                <ul>
-                    {{ range  $key, $val := .Labels }}
-                    <li><code>{{ $key }}:&nbsp;{{ $val }}</code></li>
-                    {{end}}
-                </ul>
-            </td>
-            <td>
-                {{ if eq .Enabled true }}
-                <span style="font-weight: bold; color: green">true</span>
-                {{ else }}
-                <span style="font-weight: bold; color: red">false</span>
-                {{ end }}
-            </td>
-            <td><pre>{{ marshal .Taints }}</pre></td>
-        </tr>
-        {{ end }}
-    </table>
-</div>
+  {{ range . }}
+  <tr>
+    <td><b>{{ .Name }}</b></td>
+    <td>{{ countPlacements .Name }}</td>
+    <td>
+      <ul>
+        {{ range  $key, $val := .Labels }}
+        <li><code>{{ $key }}:&nbsp;{{ $val }}</code></li>
+        {{end}}
+      </ul>
+    </td>
+    <td>
+      {{ if eq .Enabled true }}
+      <span style="font-weight: bold; color: green">true</span>
+      {{ else }}
+      <span style="font-weight: bold; color: red">false</span>
+      {{ end }}
+    </td>
+    <td><pre>{{ marshal .Taints }}</pre></td>
+  </tr>
+  {{ end }}
+</table>

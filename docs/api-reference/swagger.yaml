@@ -362,12 +362,16 @@ components:
         - hash
         - author
         - date
+        - origin
       properties:
         hash:
           type: string
           description: Hash of the commit
         author:
           type: string
+        origin:
+          type: string
+          description: The URL of the 'origin' git remote.
         date:
           description: Date of the signature of the commit. Date is UTC.
           type: string

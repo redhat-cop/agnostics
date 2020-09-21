@@ -1,28 +1,34 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>Dashboard</title>
-    <link rel="stylesheet" href="https://unpkg.com/purecss@2.0.3/build/pure-min.css" integrity="sha384-cg6SkqEOCV1NbJoCu11+bm0NvBRc8IYLRGXkmNrqUBfTjmMYwNKPWBTIKyw9mHNJ" crossorigin="anonymous">
-    <link rel="stylesheet" href="https://unpkg.com/purecss@2.0.3/build/base-min.css">
-<link rel="stylesheet" href="https://unpkg.com/purecss@2.0.3/build/grids-min.css">
-<link rel="stylesheet" href="https://unpkg.com/purecss@2.0.3/build/grids-responsive-min.css">
+  <title>Dashboard</title>
+  <link rel="stylesheet" href="https://unpkg.com/purecss@2.0.3/build/pure-min.css" integrity="sha384-cg6SkqEOCV1NbJoCu11+bm0NvBRc8IYLRGXkmNrqUBfTjmMYwNKPWBTIKyw9mHNJ" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://unpkg.com/purecss@2.0.3/build/base-min.css">
+  <link rel="stylesheet" href="https://unpkg.com/purecss@2.0.3/build/grids-min.css">
+  <link rel="stylesheet" href="https://unpkg.com/purecss@2.0.3/build/grids-responsive-min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 
-
-    <style>
-      .pure-g > div {
+  <style>
+    .pure-g > div {
         box-sizing: border-box;
         padding-left: 1em;
+        font-size: 80%;
     }
 
-      tr:nth-child(even) {
-          background-color: #eeeeee;
-      }
-</style>
+    tr:nth-child(even) {
+        background-color: #eeeeee;
+    }
+  </style>
 </head>
 <body>
   <div class="pure-g">
-  {{ template "clouds.tmpl" .Clouds }}
-  {{ template "placements.tmpl" .Placements }}
+    <div class="pure-u-1 pure-u-md-1-2">
+      {{ template "config.tmpl" .GitCommit }}
+      {{ template "clouds.tmpl" .Clouds }}
+    </div>
+    <div class="pure-u-1 pure-u-md-1-2">
+      {{ template "placements.tmpl" .Placements }}
+    </div>
   </div>
 </body>
 </html>

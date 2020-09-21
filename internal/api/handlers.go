@@ -281,12 +281,8 @@ func v1GetRepository(w http.ResponseWriter, req *http.Request, _ httprouter.Para
 	w.Header().Set("Content-Type", "application/json")
 	enc := json.NewEncoder(w)
 	enc.SetIndent("", " ")
-	if head, err := git.GetRepoHeadCommit() ; err == nil {
-		enc.Encode(v1.GitCommit{
-			Hash: head.Hash.String(),
-			Author: head.Author.Name,
-			Date: head.Author.When.UTC().Format(time.RFC3339),
-		})
+	if gitCommit, err := v1.NewGitCommit(git.GetRepo()); err == nil {
+		enc.Encode(gitCommit)
 	} else {
 		w.WriteHeader(http.StatusInternalServerError)
 		enc.Encode(v1.Error{
