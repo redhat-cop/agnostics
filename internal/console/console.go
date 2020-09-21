@@ -9,6 +9,7 @@ import (
 	"github.com/redhat-gpe/agnostics/internal/git"
 	"github.com/redhat-gpe/agnostics/internal/log"
 	"github.com/redhat-gpe/agnostics/internal/placement"
+	"github.com/redhat-gpe/agnostics/internal/watcher"
 	"html/template"
 	"io"
 	"net/http"
@@ -76,6 +77,18 @@ func getDashboard(w http.ResponseWriter, req *http.Request, params httprouter.Pa
 	})
 }
 
+func getReloadConfig(w http.ResponseWriter, req *http.Request, _ httprouter.Params) {
+	w.Header().Set("Content-Type", "text/plain")
+	go watcher.RequestPull()
+	io.WriteString(w, "Request to update git repository received.\n")
+}
+
+func getConfig(w http.ResponseWriter, req *http.Request, _ httprouter.Params) {
+	w.Header().Set("Content-Type", "text/plain")
+	commitInfo, _ := v1.NewGitCommit(git.GetRepo())
+	io.WriteString(w, toYaml(commitInfo))
+}
+
 var templateDir string
 
 // Serve function is
@@ -85,6 +98,8 @@ func Serve(t string) {
 
 	// Protected
 	router.GET("/", getDashboard)
+	router.GET("/get_config", getConfig)
+	router.GET("/reload_config", getReloadConfig)
 
 	log.Out.Println("Console listen on port :8081")
 	log.Err.Fatal(http.ListenAndServe(":8081", router))

@@ -1,2 +1,20 @@
-<h1>Config</h1>
-<pre>{{ toYaml . }}</pre>
+<h1>Configuration</h1>
+<pre id="configtext">{{ toYaml . }}</pre>
+
+<script>
+$(document).ready(function(){
+  $("#reloadconfigbutton").click(async function(){
+    $.ajax({url: "reload_config", success: function(result){
+      $("#reloadresult").html(result + "... Loading ...");
+    }});
+    await new Promise(r => setTimeout(r, 3000));
+    $.ajax({url: "get_config", success: function(result){
+      $("#configtext").html(result);
+      $("#reloadresult").html("");
+    }});
+  });
+});
+</script>
+
+<button id="reloadconfigbutton" type="submit" value="Submit">Force Reload</button>
+<span id="reloadresult" style="color: gray"></span>
