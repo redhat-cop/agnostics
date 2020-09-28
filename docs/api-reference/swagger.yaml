@@ -1,11 +1,11 @@
 openapi: "3.0.3"
 info:
-  version: 1.0.1
+  version: 1.0.2
   title: Scheduler
   license:
     name: MIT
 servers:
-  - url: http://scheduler.open.redhat.com/api/v1
+  - url: http://localhost:8080/api/v1
 paths:
   /repo:
     get:
@@ -52,7 +52,7 @@ paths:
       tags:
         - schedule
       requestBody:
-        description: JSON object to specify selectors and priorities
+        description: JSON object to specify selectors, priorities and tolerations
         content:
           application/json:
             schema:
@@ -213,6 +213,179 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
+  /taint/{cloudName}:
+    post:
+      summary: Taint a cloud
+      operationId: taintCloud
+      tags:
+        - clouds
+      parameters:
+        - name: cloudName
+          in: path
+          required: true
+          description: The name of the cloud to taint
+          schema:
+            type: string
+      requestBody:
+        description: JSON object representing the taint
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Taint"
+      responses:
+        '200':
+          description: The cloud is tainted
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Cloud"
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        '404':
+          description: Cloud NotFound
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /taint/{cloudName}/delete:
+    post:
+      summary: Untaint a cloud by passing the Taint in Body
+      operationId: deleteTaintByBody
+      tags:
+        - clouds
+      parameters:
+        - name: cloudName
+          in: path
+          required: true
+          description: The name of the cloud to untaint
+          schema:
+            type: string
+      requestBody:
+        description: JSON object representing the taint
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Taint"
+      responses:
+        '200':
+          description: Taint removed from cloud
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Cloud"
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        '404':
+          description: Cloud NotFound
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /taint/{cloudName}/{taintIndex}:
+    delete:
+      summary: Untaint a cloud by specifying the index of the taint to be removed
+      description: You can use this method to delete a taint from a cloud by providing the index of the taint in the <code>Cloud.Taints</code> array.
+      operationId: deleteTaintByIndex
+      tags:
+        - clouds
+      parameters:
+        - name: cloudName
+          in: path
+          required: true
+          description: The name of the cloud to untaint
+          schema:
+            type: string
+        - name: taintIndex
+          in: path
+          required: true
+          description: The index of the taint in the cloud
+          schema:
+            type: integer
+            format: int32
+      responses:
+        '200':
+          description: Taint was removed from cloud.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Cloud"
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        '404':
+          description: Cloud Not Found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /taints/{cloudName}:
+    delete:
+      summary: Untaint entirely a cloud, remove all its taints.
+      operationId: untaintCloud
+      tags:
+        - clouds
+      parameters:
+        - name: cloudName
+          in: path
+          required: true
+          description: The name of the cloud to untaint
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Cloud untainted
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Cloud"
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        '404':
+          description: Cloud Not Found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
   /counters:
     put:
       summary: Force the server to refresh all the counters
@@ -240,7 +413,7 @@ components:
       type: object
       required:
         - name
-        - label
+        - labels
       properties:
         name:
           type: string
@@ -248,6 +421,10 @@ components:
           type: object
           additionalProperties:
             type: string
+        taints:
+          type: array
+          items:
+            $ref: "#/components/schemas/Taint"
 
     Clouds:
       type: array
@@ -290,6 +467,31 @@ components:
       items:
         $ref: "#/components/schemas/Placement"
 
+    Taint:
+      type: object
+      description: The cloud this taint is attached to has the "effect" on any deployment that does not tolerate the Taint.
+      required:
+        - key
+        - effect
+      properties:
+        key:
+          type: string
+          description: The name of the taint to be applied to a cloud.
+          example: memory-pressure
+        value:
+          type: string
+          description: The value of the taint.
+          example: critical
+        effect:
+          type: string
+          description: |-
+            The effect of the taint on deployments that do not tolerate the taint. <br /><br />
+            NoSchedule: affects the predicates, Cloud can't be selected unless there is a matching Toleration.
+            PreferNoSchedule: affects the priorities, Cloud will be de-prioritized.
+          enum:
+            - NoSchedule
+            - PreferNoSchedule
+
     Toleration:
       type: object
       description: Object passed when requesting schedule to ignore taints.
@@ -302,13 +504,20 @@ components:
             If the key is empty, operator must be Exists;
             this combination means to match all values and all keys.
             (optional)
+          example: memory-pressure
         operator:
           description: |-
             Operator represents a key's relationship to the value.
             Valid operators are Exists and Equal. Defaults to Equal.
             Exists is equivalent to wildcard for value, so that a cloud can
             tolerate all taints of a particular category.
-            (optional)
+            (optional)<br /><br />
+            Equal: The key/value/effect parameters must match. This is the default.<br />
+            Exists: The key/value/effect parameters must match. This is the default.
+          enum:
+            - Exists
+            - Equal
+          default: Equal
           type: string
         value:
           type: string
@@ -316,12 +525,16 @@ components:
             Value is the taint value the toleration matches to.
             If the operator is Exists, the value should be empty, otherwise just a regular string.
             +optional
+          example: critical
         effect:
           type: string
           description: |-
             Effect indicates the taint effect to match. Empty means match all taint effects.
             When specified, allowed values are NoSchedule, PreferNoSchedule.
             +optional
+          enum:
+            - NoSchedule
+            - PreferNoSchedule
 
     ScheduleQuery:
       type: object
@@ -342,7 +555,7 @@ components:
             type: string
         tolerations:
           type: array
-          description: The list of tolerations for this request. Any taint matching the a toleration will be ignored (all taints ignored == cloud can be selected).
+          description: The list of tolerations for this request. Any taint matching a toleration will be ignored (all taints ignored == cloud can be selected).
           items:
             $ref: "#/components/schemas/Toleration"
         annotations:

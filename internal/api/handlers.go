@@ -63,8 +63,8 @@ func v1PostSchedule(w http.ResponseWriter, req *http.Request, params httprouter.
 
 	dec := json.NewDecoder(strings.NewReader(string(body)))
 	dec.DisallowUnknownFields()
-	t := new(v1.ScheduleQuery)
-	if err := dec.Decode(t); err != io.EOF  && err != nil {
+	scheduleQuery := new(v1.ScheduleQuery)
+	if err := dec.Decode(scheduleQuery); err != io.EOF  && err != nil {
 		log.Out.Println("POST schedule", err)
 		w.WriteHeader(http.StatusBadRequest)
 		enc.Encode(v1.Error{
@@ -74,7 +74,7 @@ func v1PostSchedule(w http.ResponseWriter, req *http.Request, params httprouter.
 		return
 	}
 
-	if t.UUID == "" {
+	if scheduleQuery.UUID == "" {
 		w.WriteHeader(http.StatusBadRequest)
 		enc.Encode(v1.Error{
 			Code: http.StatusBadRequest,
@@ -83,8 +83,8 @@ func v1PostSchedule(w http.ResponseWriter, req *http.Request, params httprouter.
 		return
 	}
 
-	if len(t.Annotations) > 0 {
-		for k, v := range t.Annotations {
+	if len(scheduleQuery.Annotations) > 0 {
+		for k, v := range scheduleQuery.Annotations {
 			if k == "" || v == "" {
 				w.WriteHeader(http.StatusBadRequest)
 				enc.Encode(v1.Error{
@@ -96,7 +96,7 @@ func v1PostSchedule(w http.ResponseWriter, req *http.Request, params httprouter.
 		}
 	}
 
-	if _, err := placement.Get(t.UUID) ; err != placement.ErrPlacementNotFound {
+	if _, err := placement.Get(scheduleQuery.UUID) ; err != placement.ErrPlacementNotFound {
 		if err == nil {
 			w.WriteHeader(http.StatusBadRequest)
 			enc.Encode(v1.Error{
@@ -110,35 +110,62 @@ func v1PostSchedule(w http.ResponseWriter, req *http.Request, params httprouter.
 		log.Err.Println("POST schedule", err)
 		w.WriteHeader(http.StatusInternalServerError)
 		enc.Encode(v1.Error{
-			Code: 500,
+			Code: http.StatusInternalServerError,
 			Message: "Internal Server Error",
 		})
 		return
 	}
 
-	clouds := modules.LabelPredicates(config.GetClouds(), t.CloudSelector)
-	results := modules.LabelPriorities(clouds, t.CloudPreference)
-	if len(results) == 0 {
+	policy := config.GetPolicy()
+	clouds := []v1.Cloud{}
+	for _, c := range config.GetClouds() {
+		clouds = append(clouds, c)
+	}
+
+	for _, predicate := range policy.Predicates {
+		switch predicate.Name {
+		case "LabelPredicates":
+			clouds = modules.LabelPredicates(clouds, scheduleQuery.CloudSelector)
+		case "TaintPredicates":
+			clouds = modules.TaintPredicates(clouds, scheduleQuery.Tolerations)
+		default:
+			log.Err.Println("Predicate", predicate.Name, "not supported")
+		}
+	}
+
+	for _, priority := range policy.Priorities {
+		switch priority.Name {
+		case "LabelPriorities":
+			clouds = modules.LabelPriorities(clouds, scheduleQuery.CloudPreference, priority.Weight)
+		case "TaintPriorities":
+			clouds = modules.TaintPriorities(clouds, scheduleQuery.Tolerations, priority.Weight)
+		default:
+			log.Err.Println("Priority", priority.Name, "not supported")
+		}
+	}
+
+	if len(clouds) == 0 {
 		log.Out.Println("POST schedule", err)
+		w.WriteHeader(http.StatusNotFound)
 		enc.Encode(v1.Error{
-			Code: 404,
+			Code: http.StatusNotFound,
 			Message: "No cloud found.",
 		})
 		return
 	}
 	// pick the first one
 	result := v1.Placement{
-		UUID: t.UUID,
-		Cloud: results[0],
+		UUID: scheduleQuery.UUID,
+		Cloud: clouds[0],
 		CreationTimestamp: time.Now().UTC().Round(time.Second),
-		Annotations: t.Annotations,
+		Annotations: scheduleQuery.Annotations,
 	}
 	placement.Save(result)
 	if err := enc.Encode(result) ; err != nil {
 		log.Err.Println("POST schedule", err)
 		w.WriteHeader(http.StatusInternalServerError)
 		enc.Encode(v1.Error{
-			Code: 500,
+			Code: http.StatusInternalServerError,
 			Message: "Error encoding data to JSON",
 		})
 	}

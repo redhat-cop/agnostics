@@ -19,11 +19,9 @@
             </span>
         </td>
         <td>
-            <ul>
-                {{ range $key, $val := .Annotations }}
-                <li><code>{{ $key }}:&nbsp;{{ $val }}</code></li>
-                {{ end }}
-            </ul>
+            {{ range $key, $val := .Annotations }}
+            <code>{{ $key }}:&nbsp;{{ $val }}</code></br>
+            {{ end }}
         </td>
         <td>{{ .Cloud.Name }}</td>
     </tr>

@@ -14,11 +14,9 @@
     <td><b>{{ .Name }}</b></td>
     <td>{{ countPlacements .Name }}</td>
     <td>
-      <ul>
         {{ range  $key, $val := .Labels }}
-        <li><code>{{ $key }}:&nbsp;{{ $val }}</code></li>
+        <code>{{ $key }}:&nbsp;{{ $val }}</code></br>
         {{end}}
-      </ul>
     </td>
     <td>
       {{ if eq .Enabled true }}
@@ -27,7 +25,17 @@
       <span style="font-weight: bold; color: red">false</span>
       {{ end }}
     </td>
-    <td><pre>{{ marshal .Taints }}</pre></td>
+    <td>
+        {{ range .Taints }}
+        {{ if eq .Effect "NoSchedule"  }}
+        <span class="taint-noschedule">
+        {{ else }}
+        <span class="taint-prefernoschedule">
+        {{ end }}
+          <code>{{ . }}</code></span></br>
+        {{ end }}
+
+    </td>
   </tr>
   {{ end }}
 </table>

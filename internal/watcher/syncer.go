@@ -1,14 +1,13 @@
 package watcher
 
 import(
-	"github.com/redhat-gpe/agnostics/internal/git"
 	"github.com/redhat-gpe/agnostics/internal/log"
 	"github.com/redhat-gpe/agnostics/internal/config"
 	"github.com/redhat-gpe/agnostics/internal/db"
 	"github.com/gomodule/redigo/redis"
 )
 
-func RequestPull() {
+func RequestTaintSync() {
 	conn, err :=  db.Dial()
 	if err != nil {
 		log.Err.Println("Cannot connect to redis. Repo not updated.")
@@ -16,33 +15,29 @@ func RequestPull() {
 	}
 	defer conn.Close()
 
-	conn.Do("PUBLISH", "repoMQ", "pull")
+	conn.Do("PUBLISH", "taintMQ", "sync")
 }
 
-// ConsumePullQueue function watches the message Queue 'repoMQ' in redis
-// and executes RefreshRepository when there is a request with
-// a delay of 10 seconds between each call.
-// The goal is to avoid spamming github (or whatever the provider).
-func ConsumePullQueue() {
+// ConsumeTaintSyncQueue function watches the message Queue 'taintMQ' in redis
+// and executes RefreshTaints when there is a request.
+func ConsumeTaintSyncQueue() {
 	conn :=  db.ReconnectPubSub()
 	defer conn.Close()
 
-	conn.Subscribe("repoMQ")
-	defer conn.Unsubscribe("repoMQ")
+	conn.Subscribe("taintMQ")
+	defer conn.Unsubscribe("taintMQ")
 	for {
 		switch v := conn.Receive().(type) {
 		case redis.Message:
 			log.Debug.Printf("channel %s: message: %s\n", v.Channel, v.Data)
-			if err := git.RefreshRepository(); err == nil {
-				config.Load()
-			}
+			db.ReloadAllTaints(config.GetClouds())
 		case redis.Subscription:
 			log.Debug.Printf("channel %s: %s %d\n", v.Channel, v.Kind, v.Count)
 			continue
 		case error:
 			log.Debug.Println(v)
 			conn = db.ReconnectPubSub()
-			conn.Subscribe("repoMQ")
+			conn.Subscribe("taintMQ")
 		}
 	}
 }

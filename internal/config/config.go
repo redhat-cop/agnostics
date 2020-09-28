@@ -5,6 +5,7 @@ import(
 	"io/ioutil"
 	"github.com/redhat-gpe/agnostics/internal/log"
 	"github.com/redhat-gpe/agnostics/internal/git"
+	"github.com/redhat-gpe/agnostics/internal/db"
 	"github.com/redhat-gpe/agnostics/internal/api/v1"
 	"path/filepath"
 	"path"
@@ -31,7 +32,7 @@ func loadClouds() map[string]v1.Cloud {
 	if err != nil {
 		log.Err.Fatal(err)
 	}
-	log.Debug.Printf("Found %d configuration files for clouds\n",  len(cloudFileList))
+	log.Out.Printf("Found %d configuration files for clouds\n",  len(cloudFileList))
 
 	clouds := make(map[string]v1.Cloud)
 
@@ -57,15 +58,53 @@ func loadClouds() map[string]v1.Cloud {
 
 var clouds map[string]v1.Cloud
 
+type Policy struct {
+	Predicates []struct{
+		Name string `json:"name"`
+	} `json:"predicates,omitempty"`
+	Priorities []struct{
+		Name string `json:"name"`
+		Weight int `json:"weight"`
+	} `json:"priorities,omitempty"`
+}
+
+var policy Policy
+
+func loadPolicy() Policy {
+	result := Policy{}
+	functionName := "LoadPolicy:"
+	policyFile := filepath.Join(git.GetRepoDir(), "/policy.yaml")
+	log.Out.Println("Reading policy file", policyFile)
+	content, err := ioutil.ReadFile(policyFile)
+	if err != nil {
+		log.Err.Println("Error in", functionName)
+		log.Err.Fatal(err)
+	}
+	err = yaml.Unmarshal(content, &result)
+	if err != nil {
+		log.Err.Println("Cannot read configuration of policy.yaml")
+		log.Err.Fatalf("Cannot unmarshal data: %v", err)
+	} else {
+		log.Out.Printf("Found policy, %d predicates and %d priorities", len(result.Predicates), len(result.Priorities))
+	}
+	return result
+}
+
 // Public functions
 
 // Read the config from the local files and save in-memory
 func Load() {
-	// TODO: save and restore taints
+	policy = loadPolicy()
 	clouds = loadClouds()
+	db.ReloadAllTaints(clouds)
 }
 
 // GetClouds Returns the in-memory list of clouds (v1)
 func GetClouds() map[string]v1.Cloud {
 	return clouds
+}
+
+// GetPolicy returns the in-memory policy
+func GetPolicy() Policy {
+	return policy
 }

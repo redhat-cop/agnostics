@@ -2,39 +2,37 @@ package modules
 
 import (
 	"github.com/redhat-gpe/agnostics/internal/api/v1"
+	"github.com/redhat-gpe/agnostics/internal/log"
+	"sort"
 )
 
-type taintedCloud v1.Cloud
+// TaintPredicates filters out clouds with taints unless there are matching tolerations.
+func TaintPredicates(clouds []v1.Cloud, tolerations []v1.Toleration) []v1.Cloud {
+	result := []v1.Cloud{}
 
-func (c taintedCloud) isTolerated(tolerations []v1.Toleration) bool {
-taintLoop:
-	for _, taint := range c.Taints {
-		// Ignore Taint if effect is not NoSchedule
-		if taint.Effect != v1.TaintEffectNoSchedule {
-			continue taintLoop
-		}
-	tolerationLoop:
-		for _, tol := range tolerations {
-			if tol.ToleratesTaint(taint) {
-				continue taintLoop
-			} else {
-				continue tolerationLoop
-			}
-		}
-
-		return false
-	}
-	return true
-}
-
-// This function filters out clouds with taints unless there are matching tolerations.
-func TaintPredicates(clouds map[string]v1.Cloud, tolerations []v1.Toleration) map[string]v1.Cloud {
-	result := map[string]v1.Cloud{}
-
-	for k, v := range clouds {
-		if (taintedCloud)(v).isTolerated(tolerations) {
-			result[k] = v
+	for _, cloud := range clouds {
+		if cloud.IsTolerated(tolerations, v1.TaintEffectNoSchedule) {
+			result = append(result, cloud)
 		}
 	}
 	return result
+}
+
+
+// TaintPriorities sort the clouds according to the Taints present, and the weight passed.
+func TaintPriorities(clouds []v1.Cloud, tolerations []v1.Toleration, weight int) []v1.Cloud {
+	for i, c := range clouds {
+		for _, t := range c.Taints {
+			// For priorities, we're only intereste in PreferNoSchedule
+			if t.Effect == v1.TaintEffectPreferNoSchedule {
+				if ! t.IsTolerated(tolerations) {
+					clouds[i].Weight = c.Weight - weight
+				} else {
+					log.Debug.Println(clouds[i].Name, "taint", t, "tolerated")
+				}
+			}
+		}
+	}
+	sort.Sort(ByWeight(clouds))
+	return clouds
 }

@@ -29,6 +29,42 @@ Usage of ./scheduler:
          (default "redis://localhost:6379")
 ----
 
+== Config Git repository ==
+
+The Git repository must contain the following:
+
+- `/policy.yaml` - describing the policy.
+- `/clouds` - directory containting the definition of the resources (clouds) to be scheduled.
+
+.example `policy.yaml`
+[source,yaml]
+----
+---
+predicates:
+  - name: LabelPredicates
+  - name: TaintPredicates
+
+priorities:
+  - name: LabelPriorities
+    weight: 1 # <1>
+  - name: TaintPriorities
+    weight: 1 # <2>
+----
+<1> The weight that will be used to increase the priority of Clouds that match the preferences provided in the Schedule request
+<2> The weight that will be used to decrease the priority of Clouds if they have Taints of type "PreferNoSchedule"
+
+.example `clouds/openstack-blue.yml`
+[source,yaml]
+----
+---
+name: openstack-blue
+labels:
+  type: osp
+  region: na
+  datacenter: wdc
+  purpose: ilt
+----
+
 == Example using the scheduler (client)
 
 Here is an example how the scheduler can be used from ansible.
@@ -55,6 +91,8 @@ agnosticv_meta:
 - name: Schedule or retrieve a placement using UUID
   hosts: localhost
   gather_facts: false
+  vars:
+    output: /tmp/placement.json
   tasks:
     - name: Schedule a placement
       uri:
@@ -65,6 +103,7 @@ agnosticv_meta:
         body_format: json
         body: "{{ agnosticv_meta.scheduler.data }}"
         status_code: [200, 400]
+        dest: "{{ output }}"
       register: r_placement
       retries: 10
       delay: 30
@@ -79,13 +118,19 @@ agnosticv_meta:
         validate_certs: "{{ agnosticv_meta.scheduler.validate_certs | default(false) }}"
         return_content: true
         method: GET
-      register: r_placement
+        dest: "{{ output }}"
+      register: g_placement
       retries: 10
       delay: 30
-      until: r_placement is succeeded
+      until: g_placement is succeeded
 
     - debug:
-        msg: "{{ r_placement.json.cloud.name }}"
+        msg: >-
+          {% if r_placement.json.cloud is defined %}
+          {{ r_placement.json.cloud.name }}
+          {% else %}
+          {{ r_placement.json.message }}: {{ g_placement.json.cloud.name }}
+          {% endif %}
 ----
 
 . Playbook to delete placement using UUID
