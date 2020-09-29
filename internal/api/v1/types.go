@@ -75,9 +75,6 @@ type Taint struct {
 	// CreationTimestamp the Taint was added.
 	// +optional
 	CreationTimestamp time.Time `json:"creation_timestamp,omitempty"`
-	// ValidUntil is the time when the taint expires.
-	// +optional
-	ValidUntil time.Time `json:"valid_until,omitempty"`
 }
 
 // Toleration : The deployment this Toleration is attached to tolerates any taint that matches
