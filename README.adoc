@@ -13,7 +13,7 @@ image::https://gpte-public.s3.amazonaws.com/agnostics/scheduler.png[width=100%]
 Usage of ./scheduler:
   -api-addr string
         The address API listens to.
-        Environment variable: *API_ADDR.
+        Environment variable: *API_ADDR*
          (default ":8080")
   -console-addr string
         The address the Console listens to.
