@@ -37,7 +37,7 @@ Usage of ./scheduler:
          (default "redis://localhost:6379")
   -template-dir string
         The directory containing the golang templates for the Console.
-        Environment variable: *REDIS_URL*
+        Environment variable: *TEMPLATE_DIR*
          (default "templates")
 ----
 

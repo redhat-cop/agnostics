@@ -26,7 +26,7 @@ func parseFlags() {
 	flag.StringVar(&sshPrivateKey, "git-ssh-private-key", "", "The path of the SSH private key used to authenticate to the git repository. Used only when 'git-url' is an SSH URL.\nEnvironment variable: GIT_SSH_PRIVATE_KEY\n")
 	flag.StringVar(&redisURL, "redis-url", "redis://localhost:6379", "The URL to access redis. The format is described by the IANA specification for the scheme, see https://www.iana.org/assignments/uri-schemes/prov/redis\nEnvironment variable: REDIS_URL\n")
 	flag.BoolVar(&debugFlag, "debug", false, "Debug mode.\nEnvironment variable: DEBUG\n")
-	flag.StringVar(&templateDir, "template-dir", "templates", "The directory containing the golang templates for the Console.\nEnvironment variable: REDIS_URL\n")
+	flag.StringVar(&templateDir, "template-dir", "templates", "The directory containing the golang templates for the Console.\nEnvironment variable: TEMPLATE_DIR\n")
 	flag.StringVar(&apiAddress, "api-addr", ":8080", "The address API listens to.\nEnvironment variable: API_ADDR\n")
 	flag.StringVar(&consoleAddress, "console-addr", ":8081", "The address the Console listens to.\nEnvironment variable: CONSOLE_ADDR\n")
 
@@ -45,6 +45,9 @@ func parseFlags() {
 	}
 	if e := os.Getenv("CONSOLE_ADDR"); e != "" {
 		consoleAddress = e
+	}
+	if e := os.Getenv("TEMPLATE_DIR"); e != "" {
+		templateDir = e
 	}
 	if e := os.Getenv("DEBUG"); e != "" && e != "false" {
 		debugFlag = true
