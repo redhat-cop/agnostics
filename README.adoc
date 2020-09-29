@@ -11,6 +11,14 @@ image::https://gpte-public.s3.amazonaws.com/agnostics/scheduler.png[width=100%]
 [source,subs="+quotes,verbatim,macros"]
 ----
 Usage of ./scheduler:
+  -api-addr string
+        The address API listens to.
+        Environment variable: *API_ADDR.
+         (default ":8080")
+  -console-addr string
+        The address the Console listens to.
+        Environment variable: *CONSOLE_ADDR*
+         (default ":8081")
   -debug
         Debug mode.
         Environment variable: *DEBUG*
@@ -27,6 +35,10 @@ Usage of ./scheduler:
         The URL to access redis. The format is described by the IANA specification for the scheme, see https://www.iana.org/assignments/uri-schemes/prov/redis
         Environment variable: *REDIS_URL*
          (default "redis://localhost:6379")
+  -template-dir string
+        The directory containing the golang templates for the Console.
+        Environment variable: *REDIS_URL*
+         (default "templates")
 ----
 
 == Config Git repository ==
