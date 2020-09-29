@@ -21,80 +21,80 @@ func sliceEqual(a, b []string) bool {
 }
 
 func TestTaintPredicates (t *testing.T) {
-	clouds := map[string]v1.Cloud{
-		"openstack-1": v1.Cloud{
+	clouds := []v1.Cloud{
+		{
 			Name: "openstack-1",
-			Taints: map[string]v1.Taint{},
+			Taints: []v1.Taint{},
 		},
-		"openstack-2": v1.Cloud{
+		{
 			Name: "openstack-2",
-			Taints: map[string]v1.Taint{
-				"memory-pressure": {
+			Taints: []v1.Taint{
+				{
 					Key: "memory-pressure",
 					Value: "high",
 					Effect: v1.TaintEffectPreferNoSchedule,
 				},
 			},
 		},
-		"openstack-3": v1.Cloud{
+		{
 			Name: "openstack-3",
-			Taints: map[string]v1.Taint{
-				"memory-pressure": {
+			Taints: []v1.Taint{
+				{
 					Key: "memory-pressure",
 					Value: "critical",
 					Effect: v1.TaintEffectNoSchedule,
 				},
 			},
 		},
-		"openstack-4": v1.Cloud{
+		{
 			Name: "openstack-4",
-			Taints: map[string]v1.Taint{
-				"custom-taint": {
+			Taints: []v1.Taint{
+				{
 					Key: "custom-taint",
 					Value: "custom-value",
 					Effect: v1.TaintEffectNoSchedule,
 				},
 			},
 		},
-		"openstack-5": v1.Cloud{
+		{
 			Name: "openstack-5",
-			Taints: map[string]v1.Taint{
-				"cpu-pressure": {
+			Taints: []v1.Taint{
+				{
 					Key: "cpu-pressure",
 					Value: "critical",
 					Effect: v1.TaintEffectNoSchedule,
 				},
 			},
 		},
-		"openstack-6": v1.Cloud{
+		{
 			Name: "openstack-6",
-			Taints: map[string]v1.Taint{
-				"disk-pressure": {
+			Taints: []v1.Taint{
+				{
 					Key: "disk-pressure",
 					Value: "high",
 					Effect: v1.TaintEffectNoSchedule,
 				},
 			},
 		},
-		"openstack-7": v1.Cloud{
+		{
 			Name: "openstack-7",
-			Taints: map[string]v1.Taint{
-				"disk-pressure": {
+			Taints: []v1.Taint{
+				{
 					Key: "disk-pressure",
 					Value: "critical",
 					Effect: v1.TaintEffectNoSchedule,
 				},
 			},
 		},
-		"openstack-8": v1.Cloud{
+		{
 			Name: "openstack-8",
-			Taints: map[string]v1.Taint{
-				"disk-pressure": {
+			Taints: []v1.Taint{
+				{
 					Key: "disk-pressure",
 					Value: "critical",
 					Effect: v1.TaintEffectNoSchedule,
 				},
-				"memory-pressure": {
+				{
 					Key: "memory-pressure",
 					Value: "critical",
 					Effect: v1.TaintEffectNoSchedule,
@@ -104,7 +104,7 @@ func TestTaintPredicates (t *testing.T) {
 	}
 	testCases := []struct {
 		description string
-		clouds map[string]v1.Cloud
+		clouds []v1.Cloud
 		tolerations []v1.Toleration
 		expected []string
 	}{

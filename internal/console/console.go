@@ -92,7 +92,7 @@ func getConfig(w http.ResponseWriter, req *http.Request, _ httprouter.Params) {
 var templateDir string
 
 // Serve function is
-func Serve(t string) {
+func Serve(t string, addr string) {
 	templateDir = t
 	router := httprouter.New()
 
@@ -101,6 +101,6 @@ func Serve(t string) {
 	router.GET("/get_config", getConfig)
 	router.GET("/reload_config", getReloadConfig)
 
-	log.Out.Println("Console listen on port :8081")
-	log.Err.Fatal(http.ListenAndServe(":8081", router))
+	log.Out.Println("Console listen on port", addr)
+	log.Err.Fatal(http.ListenAndServe(addr, router))
 }

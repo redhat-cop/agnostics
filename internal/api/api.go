@@ -20,7 +20,7 @@ func healthHandler (w http.ResponseWriter, req *http.Request, _ httprouter.Param
 	io.WriteString(w, "OK\n")
 }
 
-func Serve() {
+func Serve(addr string) {
 	router := httprouter.New()
 
 	// Health and status checks
@@ -32,6 +32,10 @@ func Serve() {
 	// v1
 	router.GET("/api/v1/clouds", v1GetClouds)
 	router.GET("/api/v1/clouds/:name", v1GetCloudByName)
+	router.POST("/api/v1/taint/:cloudname", v1PostTaintByCloudName)
+	router.POST("/api/v1/taint/:cloudname/delete", v1DeleteTaintByCloudName)
+	router.DELETE("/api/v1/taint/:cloudname/:taintindex", v1DeleteTaintByIndex)
+	router.DELETE("/api/v1/taints/:cloudname", v1DeleteTaintsByCloudName)
 	router.GET("/api/v1/repo", v1GetRepository)
 	router.PUT("/api/v1/repo", v1PullRepository)
 	router.POST("/api/v1/schedule", v1PostSchedule)
@@ -40,6 +44,6 @@ func Serve() {
 	router.DELETE("/api/v1/placements/:uuid", v1DeletePlacement)
 	router.PUT("/api/v1/counters", v1PutCounters)
 
-	log.Out.Println("API listen on port :8080")
-	log.Err.Fatal(http.ListenAndServe(":8080", router))
+	log.Out.Println("API listen on port", addr)
+	log.Err.Fatal(http.ListenAndServe(addr, router))
 }

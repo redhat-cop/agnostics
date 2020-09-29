@@ -8,11 +8,11 @@ import (
 func TestLabelPredicates(t *testing.T) {
 	var (
 		labels map[string]string
-		clouds map[string]v1.Cloud
-		result map[string]v1.Cloud
+		clouds []v1.Cloud
+		result []v1.Cloud
 	)
-	clouds = map[string]v1.Cloud{
-		"openstack-1": v1.Cloud{
+	clouds = []v1.Cloud{
+		{
 			Name: "openstack-1",
 			Enabled: true,
 			Labels: map[string]string{
@@ -21,7 +21,7 @@ func TestLabelPredicates(t *testing.T) {
 				"purpose": "development",
 			},
 		},
-		"openstack-2": v1.Cloud{
+		{
 			Name: "openstack-2",
 			Enabled: true,
 			Labels: map[string]string{
@@ -30,7 +30,7 @@ func TestLabelPredicates(t *testing.T) {
 				"purpose": "ILT",
 			},
 		},
-		"openstack-3": v1.Cloud{
+		{
 			Name: "openstack-3",
 			Enabled: true,
 			Labels: map[string]string{
@@ -39,7 +39,7 @@ func TestLabelPredicates(t *testing.T) {
 				"purpose": "ELT",
 			},
 		},
-		"openstack-disabled": v1.Cloud{
+		{
 			Name: "openstack-disabled",
 			Enabled: false,
 			Labels: map[string]string{
@@ -65,10 +65,10 @@ func TestLabelPredicates(t *testing.T) {
 	if len(result) != 2 {
 		t.Error(clouds, labels, result)
 	}
-	if _, ok := result["openstack-2"]; ! ok {
+	if result[0].Name != "openstack-2" {
 		t.Error(clouds, labels, result)
 	}
-	if _, ok := result["openstack-3"]; ! ok {
+	if result[1].Name != "openstack-3" {
 		t.Error(clouds, labels, result)
 	}
 
@@ -80,7 +80,7 @@ func TestLabelPredicates(t *testing.T) {
 	if len(result) != 1 {
 		t.Error(clouds, labels, result)
 	}
-	if _, ok := result["openstack-2"]; ! ok {
+	if result[0].Name != "openstack-2" {
 		t.Error(clouds, labels, result)
 	}
 
@@ -98,12 +98,12 @@ func TestLabelPredicates(t *testing.T) {
 func TestLabelPriorities(t *testing.T) {
 	var (
 		preferences map[string]string
-		clouds map[string]v1.Cloud
+		clouds []v1.Cloud
 		result []v1.Cloud
 	)
 
-	clouds = map[string]v1.Cloud{
-		"openstack-1": v1.Cloud{
+	clouds = []v1.Cloud{
+		{
 			Name: "openstack-1",
 			Labels: map[string]string{
 				"type": "osp",
@@ -111,7 +111,7 @@ func TestLabelPriorities(t *testing.T) {
 				"purpose": "development",
 			},
 		},
-		"openstack-2": v1.Cloud{
+		{
 			Name: "openstack-2",
 			Labels: map[string]string{
 				"type": "osp",
@@ -119,7 +119,7 @@ func TestLabelPriorities(t *testing.T) {
 				"purpose": "ILT",
 			},
 		},
-		"openstack-3": v1.Cloud{
+		{
 			Name: "openstack-3",
 			Labels: map[string]string{
 				"type": "osp",
@@ -127,7 +127,7 @@ func TestLabelPriorities(t *testing.T) {
 				"purpose": "ELT",
 			},
 		},
-		"openstack-4": v1.Cloud{
+		{
 			Name: "openstack-4",
 			Labels: map[string]string{
 				"type": "osp",
@@ -135,7 +135,7 @@ func TestLabelPriorities(t *testing.T) {
 				"purpose": "ELT",
 			},
 		},
-		"openstack-5": v1.Cloud{
+		{
 			Name: "openstack-5",
 			Labels: map[string]string{
 				"type": "osp",
@@ -143,7 +143,7 @@ func TestLabelPriorities(t *testing.T) {
 				"purpose": "development",
 			},
 		},
-		"openstack-6": v1.Cloud{
+		{
 			Name: "openstack-6",
 			Labels: map[string]string{
 				"type": "osp",
@@ -156,7 +156,7 @@ func TestLabelPriorities(t *testing.T) {
 		"region": "sa",
 	}
 
-	result = LabelPriorities(clouds, preferences)
+	result = LabelPriorities(clouds, preferences, 1)
 
 	if len(result) != len(clouds) {
 		t.Error(preferences, result)
@@ -170,7 +170,7 @@ func TestLabelPriorities(t *testing.T) {
 		"purpose": "development",
 	}
 
-	result = LabelPriorities(clouds, preferences)
+	result = LabelPriorities(clouds, preferences, 1)
 
 	if len(result) != len(clouds) {
 		t.Error(preferences, result)

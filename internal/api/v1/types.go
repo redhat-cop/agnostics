@@ -21,7 +21,7 @@ type Cloud struct {
 	// deployment to be scheduled unless that deployment has a matching toleration.
 	// Taints are usually dynamic resources managed by the scheduler, but they can also
 	// be statically provided in the configuration.
-	Taints map[string]Taint `json:"taints"`
+	Taints []Taint `json:"taints,omitempty"`
 }
 
 type Error struct {
@@ -49,33 +49,35 @@ type GitCommit struct {
 }
 
 const(
-	// Do not allow new deployments to be scheduled onto the cloud
-	// unless they tolerate the taint
+	// TaintEffectNoSchedule does not allow new deployments to be scheduled
+	// onto the cloud unless they tolerate the taint
 	TaintEffectNoSchedule string = "NoSchedule"
-	// Like TaintEffectNoSchedule, but the scheduler tries not to schedule
-	// new deployments onto the cloud, rather than prohibiting new deployment
-	// from scheduling onto the cloud entirely.
+	// TaintEffectPreferNoSchedule is like TaintEffectNoSchedule,
+	// but the scheduler tries not to schedule new deployments onto the cloud,
+	// rather than prohibiting new deployment from scheduling onto the cloud entirely.
 	TaintEffectPreferNoSchedule string = "PreferNoSchedule"
 
 	TolerationOpExists string = "Exists"
 	TolerationOpEqual  string = "Equal"
 )
 
-
-// The cloud this taint is attached to has the "effect" on any deployment that
+// Taint : The cloud this taint is attached to has the "effect" on any deployment that
 // does not tolerate the Taint.
 type Taint struct {
 	// Required. The taint key to be applied to a cloud.
 	Key string `json:"key"`
 	// The taint value corresponding to the taint key.
 	// +optional
-	Value string `json:"value"`
+	Value string `json:"value,omitempty"`
 	// Required. The effect of the taint on deployments that do not tolerate the taint.
 	// Valid effects are NoSchedule, PreferNoSchedule.
 	Effect string `json:"effect"`
+	// CreationTimestamp the Taint was added.
+	// +optional
+	CreationTimestamp time.Time `json:"creation_timestamp,omitempty"`
 }
 
-// The deployment this Toleration is attached to tolerates any taint that matches
+// Toleration : The deployment this Toleration is attached to tolerates any taint that matches
 // the triple <key,value,effect> using the matching operator <operator>.
 type Toleration struct {
 	// Key is the taint key that the toleration applies to. Empty means match all taint keys.

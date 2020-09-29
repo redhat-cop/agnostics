@@ -18,13 +18,18 @@ var repositoryURL string
 var sshPrivateKey string
 var redisURL string
 var templateDir string
+var apiAddress string
+var consoleAddress string
 
 func parseFlags() {
 	flag.StringVar(&repositoryURL, "git-url", "git@github.com:redhat-gpe/scheduler-config.git", "The URL of the git repository where the scheduler will find its configuration. SSH is assumed, unless the URL starts with 'http'.\nEnvironment variable: GIT_URL\n")
 	flag.StringVar(&sshPrivateKey, "git-ssh-private-key", "", "The path of the SSH private key used to authenticate to the git repository. Used only when 'git-url' is an SSH URL.\nEnvironment variable: GIT_SSH_PRIVATE_KEY\n")
 	flag.StringVar(&redisURL, "redis-url", "redis://localhost:6379", "The URL to access redis. The format is described by the IANA specification for the scheme, see https://www.iana.org/assignments/uri-schemes/prov/redis\nEnvironment variable: REDIS_URL\n")
 	flag.BoolVar(&debugFlag, "debug", false, "Debug mode.\nEnvironment variable: DEBUG\n")
-	flag.StringVar(&templateDir, "template-dir", "templates", "The directory containing the golang templates for the Console.\nEnvironment variable: REDIS_URL\n")
+	flag.StringVar(&templateDir, "template-dir", "templates", "The directory containing the golang templates for the Console.\nEnvironment variable: TEMPLATE_DIR\n")
+	flag.StringVar(&apiAddress, "api-addr", ":8080", "The address API listens to.\nEnvironment variable: API_ADDR\n")
+	flag.StringVar(&consoleAddress, "console-addr", ":8081", "The address the Console listens to.\nEnvironment variable: CONSOLE_ADDR\n")
+
 	flag.Parse()
 	if e := os.Getenv("GIT_URL"); e != "" {
 		repositoryURL = e
@@ -34,6 +39,15 @@ func parseFlags() {
 	}
 	if e := os.Getenv("REDIS_URL"); e != "" {
 		redisURL = e
+	}
+	if e := os.Getenv("API_ADDR"); e != "" {
+		apiAddress = e
+	}
+	if e := os.Getenv("CONSOLE_ADDR"); e != "" {
+		consoleAddress = e
+	}
+	if e := os.Getenv("TEMPLATE_DIR"); e != "" {
+		templateDir = e
 	}
 	if e := os.Getenv("DEBUG"); e != "" && e != "false" {
 		debugFlag = true
@@ -46,7 +60,8 @@ func main() {
 	db.InitContext(redisURL)
 	git.CloneRepository(repositoryURL, sshPrivateKey)
 	go watcher.ConsumePullQueue()
+	go watcher.ConsumeTaintSyncQueue()
 	config.Load()
-	go console.Serve(templateDir)
-	api.Serve()
+	go console.Serve(templateDir, consoleAddress)
+	api.Serve(apiAddress)
 }
