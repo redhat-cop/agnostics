@@ -20,6 +20,8 @@ var redisURL string
 var templateDir string
 var apiAddress string
 var consoleAddress string
+var apiAuth bool
+var apiHtpasswd string
 
 func parseFlags() {
 	flag.StringVar(&repositoryURL, "git-url", "git@github.com:redhat-gpe/scheduler-config.git", "The URL of the git repository where the scheduler will find its configuration. SSH is assumed, unless the URL starts with 'http'.\nEnvironment variable: GIT_URL\n")
@@ -29,6 +31,8 @@ func parseFlags() {
 	flag.StringVar(&templateDir, "template-dir", "templates", "The directory containing the golang templates for the Console.\nEnvironment variable: TEMPLATE_DIR\n")
 	flag.StringVar(&apiAddress, "api-addr", ":8080", "The address API listens to.\nEnvironment variable: API_ADDR\n")
 	flag.StringVar(&consoleAddress, "console-addr", ":8081", "The address the Console listens to.\nEnvironment variable: CONSOLE_ADDR\n")
+	flag.BoolVar(&apiAuth, "api-auth", true, "Enable authentication for the API.\nEnvironment variable: API_AUTH  ('true' or 'false')\n")
+	flag.StringVar(&apiHtpasswd, "api-htpasswd", "api-htpasswd", "The path of the htpasswd file to use for authentication for the API.\nEnvironment variable: API_HTPASSWD\n")
 
 	flag.Parse()
 	if e := os.Getenv("GIT_URL"); e != "" {
@@ -49,6 +53,12 @@ func parseFlags() {
 	if e := os.Getenv("TEMPLATE_DIR"); e != "" {
 		templateDir = e
 	}
+	if e := os.Getenv("API_AUTH"); e == "false" {
+		apiAuth = false
+	}
+	if e := os.Getenv("API_HTPASSWD"); e != "" {
+		apiHtpasswd = e
+	}
 	if e := os.Getenv("DEBUG"); e != "" && e != "false" {
 		debugFlag = true
 	}
@@ -63,5 +73,5 @@ func main() {
 	go watcher.ConsumeTaintSyncQueue()
 	config.Load()
 	go console.Serve(templateDir, consoleAddress)
-	api.Serve(apiAddress)
+	api.Serve(apiAddress, apiAuth, apiHtpasswd)
 }
