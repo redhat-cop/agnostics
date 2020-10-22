@@ -39,6 +39,7 @@ redis:
 service:
   type: ClusterIP
   port: 80
+  htpasswd_secret: agnostics-api-htpasswd
 
 console:
   type: ClusterIP
