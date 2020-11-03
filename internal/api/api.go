@@ -26,7 +26,7 @@ func healthHandler (w http.ResponseWriter, req *http.Request, _ httprouter.Param
 }
 
 func BasicAuth(h httprouter.Handle, myauth *htpasswd.File, authEnabled bool) httprouter.Handle {
-    return func(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
+	return func(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 
 		if ! authEnabled {
 			// Delegate request to the given handle
@@ -34,27 +34,27 @@ func BasicAuth(h httprouter.Handle, myauth *htpasswd.File, authEnabled bool) htt
 			return
 		}
 
-        const basicAuthPrefix string = "Basic "
+		const basicAuthPrefix string = "Basic "
 
-        // Get the Basic Authentication credentials
-        auth := r.Header.Get("Authorization")
-        if strings.HasPrefix(auth, basicAuthPrefix) {
-            // Check credentials
-            payload, err := base64.StdEncoding.DecodeString(auth[len(basicAuthPrefix):])
-            if err == nil {
-                pair := bytes.SplitN(payload, []byte(":"), 2)
-                if len(pair) == 2 && myauth.Match(string(pair[0]), string(pair[1])) {
-                    // Delegate request to the given handle
-                    h(w, r, ps)
-                    return
-                }
-            }
-        }
+		// Get the Basic Authentication credentials
+		auth := r.Header.Get("Authorization")
+		if strings.HasPrefix(auth, basicAuthPrefix) {
+			// Check credentials
+			payload, err := base64.StdEncoding.DecodeString(auth[len(basicAuthPrefix):])
+			if err == nil {
+				pair := bytes.SplitN(payload, []byte(":"), 2)
+				if len(pair) == 2 && myauth.Match(string(pair[0]), string(pair[1])) {
+					// Delegate request to the given handle
+					h(w, r, ps)
+					return
+				}
+			}
+		}
 
-        // Request Basic Authentication otherwise
-        w.Header().Set("WWW-Authenticate", "Basic realm=Restricted")
-        http.Error(w, http.StatusText(http.StatusUnauthorized), http.StatusUnauthorized)
-    }
+		// Request Basic Authentication otherwise
+		w.Header().Set("WWW-Authenticate", "Basic realm=Restricted")
+		http.Error(w, http.StatusText(http.StatusUnauthorized), http.StatusUnauthorized)
+	}
 }
 
 func Serve(addr string, apiAuth bool, apiHtpasswd string) {
