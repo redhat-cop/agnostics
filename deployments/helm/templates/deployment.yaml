@@ -34,6 +34,8 @@ spec:
               value: {{ .Values.git.redis_url }}
             - name: DEBUG
               value: {{ .Values.git.debug }}
+            - name: API_HTPASSWD
+              value: /secrets/api-htpasswd
           ports:
             - name: http
               containerPort: 8080
@@ -51,6 +53,10 @@ spec:
           volumeMounts:
             - name: agnostics-babylon-secret
               mountPath: /.ssh
+              readOnly: true
+            - name: agnostics-api-htpasswd
+              mountPath: /secrets
+              readOnly: true
 
       {{- with .Values.nodeSelector }}
       nodeSelector:
@@ -68,3 +74,6 @@ spec:
         - name: agnostics-babylon-secret
           secret:
             secretName: agnostics-babylon
+        - name: agnostics-api-htpasswd
+          secret:
+            secretName: {{ toYaml .Values.service.htpasswd_secret }}

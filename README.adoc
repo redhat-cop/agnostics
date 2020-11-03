@@ -15,6 +15,14 @@ Usage of ./scheduler:
         The address API listens to.
         Environment variable: *API_ADDR*
          (default ":8080")
+  -api-auth
+        Enable authentication for the API.
+        Environment variable: *API_AUTH*  ('true' or 'false')
+         (default true)
+  -api-htpasswd string
+        The path of the htpasswd file to use for authentication for the API.
+        Environment variable: *API_HTPASSWD*
+         (default "api-htpasswd")
   -console-addr string
         The address the Console listens to.
         Environment variable: *CONSOLE_ADDR*
