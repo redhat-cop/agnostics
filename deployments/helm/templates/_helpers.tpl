@@ -30,5 +30,7 @@ Selector labels
 */}}
 {{- define "scheduler.selectorLabels" -}}
 app.kubernetes.io/name: {{ include "scheduler.name" . }}
+  {{- if (ne .Release.Name "RELEASE-NAME") }}
 app.kubernetes.io/instance: {{ .Release.Name }}
-{{- end }}
+  {{- end -}}
+{{- end -}}
